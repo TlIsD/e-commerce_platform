@@ -75,8 +75,16 @@ WSGI_APPLICATION = 'platformapi.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'dj_db_conn_pool.backends.mysql',
+        'NAME': 'commerce',
+        'PORT': 3306,
+        'HOST': 'localhost',
+        'USER': 'commerce_user',
+        'PASSWORD': 'commerce',
+        'POOL_OPTIONS': {
+            'POOL_SIZE': 10,
+            'MAX_OVERFLOW': 10,
+        }
     }
 }
 
