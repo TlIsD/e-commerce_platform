@@ -1,5 +1,4 @@
 <template>
-  <div>Hello</div>
   <router-view></router-view>
 </template>
 
@@ -7,7 +6,7 @@
 
 </script>
 
-<style scoped>
+<style>
 /* 全局初始化 */
 body,h1,h2,h3,h4,p,table,tr,td,ul,li,a,form,input,select,option,textarea{
   margin:0;
