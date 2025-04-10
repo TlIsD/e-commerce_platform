@@ -15,6 +15,8 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+import sys
+sys.path.insert(0, str(BASE_DIR/"apps"))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -37,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'home',
 ]
 
 MIDDLEWARE = [
@@ -75,8 +79,16 @@ WSGI_APPLICATION = 'platformapi.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'dj_db_conn_pool.backends.mysql',
+        'NAME': 'commerce',
+        'PORT': 3306,
+        'HOST': 'localhost',
+        'USER': 'commerce_user',
+        'PASSWORD': 'commerce',
+        'POOL_OPTIONS': {
+            'POOL_SIZE': 10,
+            'MAX_OVERFLOW': 10,
+        }
     }
 }
 
@@ -127,9 +139,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+<<<<<<< HEAD
     'formatters': {
         'verbose': {  # 详细格式
             # 格式定义：https://docs.python.org/3/library/logging.html#logrecord-attributes
+=======
+    'formatters': { # 日志格式设置
+        'verbose': { # 详细格式
+>>>>>>> develop
             # levelname 日志等级
             # asctime   发生时间
             # module    文件名
@@ -139,7 +156,11 @@ LOGGING = {
             'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
             'style': '{', # 变量格式分隔符
         },
+<<<<<<< HEAD
         'simple': { # 简单格式
+=======
+        'simple': {
+>>>>>>> develop
             'format': '{levelname} {message}',
             'style': '{',
         },
@@ -149,7 +170,11 @@ LOGGING = {
             '()': 'django.utils.log.RequireDebugTrue',
         },
     },
+<<<<<<< HEAD
     'handlers': { # 日志处理流程，console或者mail_admins都是自定义的。
+=======
+    'handlers': { # 日志处理流程
+>>>>>>> develop
         'console': {
             'level': 'DEBUG', # 设置当前日志处理流程中的日志最低等级
             'filters': ['require_debug_true'], # 当前日志处理流程的日志过滤
@@ -175,4 +200,45 @@ LOGGING = {
             'propagate': True,
         },
     }
+<<<<<<< HEAD
+=======
+}
+
+CACHES = {
+    # 默认缓存
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://:@127.0.0.1:6379/0",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "CONNECTION_POOL_KWARGS": {"max_connections": 10},  # 连接池
+        }
+    },
+    "session": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://:@127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "CONNECTION_POOL_KWARGS": {"max_connections": 10},
+        }
+    },
+    # 提供存储短信验证码
+    "sms_code":{
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://:@127.0.0.1:6379/2",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "CONNECTION_POOL_KWARGS": {"max_connections": 10},
+        }
+    }
+}
+
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "session"
+
+
+REST_FRAMEWORK = {
+    # 自定义异常处理
+    'EXCEPTION_HANDLER': 'platformapi.utils.exceptions.custom_exception_handler',
+>>>>>>> develop
 }
