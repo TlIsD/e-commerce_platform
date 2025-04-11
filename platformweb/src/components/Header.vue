@@ -6,11 +6,10 @@
           <router-link to="/"><img src="../assets/logo.jpg" alt=""></router-link>
         </div>
         <ul class="nav">
-          <li><router-link to="">Free</router-link></li>
-          <li><router-link to="">Project</router-link></li>
-          <li><router-link to="">Position</router-link></li>
-          <li><router-link to="">Practice</router-link></li>
-          <li><router-link to="">B站</router-link></li>
+          <li v-for="nav in nav.nav_header_list">
+            <a v-if="nav.is_http" :href="nav.link">{{ nav.name }}</a>
+            <router-link v-else :to="nav.link">{{ nav.name }}</router-link>
+          </li>
         </ul>
         <div class="search-warp">
           <div class="search-area">
@@ -40,7 +39,13 @@
 
 
 <script setup>
+import nav from "../api/nav.js";
 
+// 请求头部导航数据
+nav.get_nav_header().then(res =>{
+  // console.log(res.data)
+  nav.nav_header_list = res.data;
+})
 </script>
 
 <style scoped>
