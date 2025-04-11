@@ -13,9 +13,9 @@
 <script setup>
 import nav from "../api/nav.js";
 
-// 请求头部导航数据
+// 请求脚部导航数据
 nav.get_nav_footer().then(res =>{
-  console.log(res.data)
+  // console.log(res.data)
   nav.nav_footer_list = res.data;
 })
 </script>
