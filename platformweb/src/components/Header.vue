@@ -8,9 +8,9 @@
         <ul class="nav">
           <li><router-link to="">Free</router-link></li>
           <li><router-link to="">Project</router-link></li>
-          <li><router-link to="">Study</router-link></li>
+          <li><router-link to="">Position</router-link></li>
           <li><router-link to="">Practice</router-link></li>
-          <li><router-link to="">首页</router-link></li>
+          <li><router-link to="">B站</router-link></li>
         </ul>
         <div class="search-warp">
           <div class="search-area">
