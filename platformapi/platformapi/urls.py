@@ -23,4 +23,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     re_path(r'upload/(?P<path>.*)', serve, {"document_root": settings.MEDIA_ROOT}),
     path('', include('home.urls')),
+    path('users/', include('users.urls')),
 ]

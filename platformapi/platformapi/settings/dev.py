@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'corsheaders',
 
     'home',
+    'users'
 ]
 
 MIDDLEWARE = [
@@ -243,3 +244,6 @@ REST_FRAMEWORK = {
     # 自定义异常处理
     'EXCEPTION_HANDLER': 'platformapi.utils.exceptions.custom_exception_handler',
 }
+
+# 自定义系统认证采用的用户模型类
+AUTH_USER_MODEL = 'users.User'
