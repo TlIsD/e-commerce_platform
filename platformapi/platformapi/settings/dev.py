@@ -243,6 +243,20 @@ SESSION_CACHE_ALIAS = "session"
 REST_FRAMEWORK = {
     # 自定义异常处理
     'EXCEPTION_HANDLER': 'platformapi.utils.exceptions.custom_exception_handler',
+
+    # 自定义认证
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        # JWT认证
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    )
+}
+
+import datetime
+JWT_AUTH = {
+    # 设置JWT的有效期
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),
 }
 
 # 自定义系统认证采用的用户模型类
