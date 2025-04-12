@@ -5,7 +5,7 @@
       <div class="g-banner pr" @mouseleave="state.current_menu=-1">
         <el-col>
           <!-- 商品课程分类信息 -->
-          <div class="submenu" v-if="state.current_menu==0">
+          <div class="submenu" v-if="state.current_menu===0">
             <div class="inner-box">
               <h2 class="type">前端开发</h2>
               <div class="tag clearfix">
@@ -88,7 +88,7 @@
                 </div> </a>
             </div>
           </div>
-          <div class="submenu" v-if="state.current_menu==1">
+          <div class="submenu" v-if="state.current_menu===1">
             <div class="inner-box">
               <h2 class="type">后端开发</h2>
               <div class="tag clearfix">
@@ -171,7 +171,7 @@
                 </div> </a>
             </div>
           </div>
-          <div class="submenu" v-if="state.current_menu==2">
+          <div class="submenu" v-if="state.current_menu===2">
             <div class="inner-box">
               <h2 class="type">移动开发</h2>
               <div class="tag clearfix">
@@ -238,17 +238,17 @@
             </div>
           </div>
           <div class="menuContent">
-            <div class="item" :class="{'js-menu-item-on': state.current_menu==0}" @mouseover="state.current_menu=0">
+            <div class="item" :class="{'js-menu-item-on': state.current_menu===0}" @mouseover="state.current_menu=0">
               <span class="title">前端开发：</span>
               <span class="sub-title">HTML5 / Vue.js / Node.js</span>
               <i class="imv2-arrow1_r"></i>
             </div>
-            <div class="item" :class="{'js-menu-item-on': state.current_menu==1}" @mouseover="state.current_menu=1">
+            <div class="item" :class="{'js-menu-item-on': state.current_menu===1}" @mouseover="state.current_menu=1">
               <span class="title">后端开发：</span>
               <span class="sub-title">Java / Python / Go</span>
               <i class="imv2-arrow1_r"></i>
             </div>
-            <div class="item" :class="{'js-menu-item-on': state.current_menu==2}" @mouseover="state.current_menu=2">
+            <div class="item" :class="{'js-menu-item-on': state.current_menu===2}" @mouseover="state.current_menu=2">
               <span class="title">移动开发：</span>
               <span class="sub-title">Flutter / Android / iOS </span>
               <i class="imv2-arrow1_r"></i>

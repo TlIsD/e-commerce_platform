@@ -38,7 +38,7 @@
                 <span><router-link to="/cart">购物车</router-link></span>
               </div>
               <div class="login-box full-left">
-                <span>登录</span>
+                <span @click="state.show_login=true">登录</span>
                 &nbsp;/&nbsp;
                 <span>注册</span>
               </div>
@@ -48,16 +48,28 @@
       </el-row>
     </div>
   </div>
+
+  <el-dialog :width="600" v-model="state.show_login" :style="{ borderRadius: '16px' }">
+    <Login></Login>
+  </el-dialog>
+
 </template>
 
 
 <script setup>
 import nav from "../api/nav.js";
+import Login from "./Login.vue";
+import { reactive } from "vue";
 
 // 请求头部导航数据
 nav.get_nav_header().then(res =>{
   // console.log(res.data)
   nav.nav_header_list = res.data;
+})
+
+// 弹窗登录组件
+const state = reactive({
+  show_login: false,
 })
 </script>
 
