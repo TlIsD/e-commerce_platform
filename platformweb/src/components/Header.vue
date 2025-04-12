@@ -1,38 +1,51 @@
 <template>
   <div class="header-box">
     <div class="header">
-      <div class="content">
-        <div class="logo">
-          <router-link to="/"><img src="../assets/logo.jpg" alt=""></router-link>
-        </div>
-        <ul class="nav">
-          <li v-for="nav in nav.nav_header_list">
-            <a v-if="nav.is_http" :href="nav.link">{{ nav.name }}</a>
-            <router-link v-else :to="nav.link">{{ nav.name }}</router-link>
-          </li>
-        </ul>
-        <div class="search-warp">
-          <div class="search-area">
-            <input class="search-input" placeholder="请输入关键字..." type="text" autocomplete="off">
-            <div class="hotTags">
-              <router-link to="/search/?words=Vue" target="_blank" class="">Vue</router-link>
-              <router-link to="/search/?words=Python" target="_blank" class="last">Python</router-link>
+      <el-row :gutter="20">
+        <div class="content">
+          <el-col>
+            <div class="logo">
+              <router-link to="/"><img src="../assets/logo.jpg" alt=""></router-link>
             </div>
-          </div>
-          <div class="show-hide-search" data-show="no"><img class="imv2-search2" src="../assets/search.svg"  alt=""/></div>
+          </el-col>
+
+          <el-col>
+            <ul class="nav">
+              <li v-for="nav in nav.nav_header_list">
+                <a v-if="nav.is_http" :href="nav.link">{{ nav.name }}</a>
+                <router-link v-else :to="nav.link">{{ nav.name }}</router-link>
+              </li>
+            </ul>
+          </el-col>
+
+          <el-col>
+            <div class="search-warp">
+              <div class="search-area">
+                <input class="search-input" placeholder="请输入关键字..." type="text" autocomplete="off">
+                <div class="hotTags">
+                  <router-link to="/search/?words=Vue" target="_blank" class="">Vue</router-link>
+                  <router-link to="/search/?words=Python" target="_blank" class="last">Python</router-link>
+                </div>
+              </div>
+              <div class="show-hide-search" data-show="no"><img class="imv2-search2" src="../assets/search.svg"  alt=""/></div>
+            </div>
+          </el-col>
+
+          <el-col>
+            <div class="login-bar">
+              <div class="shop-cart full-left">
+                <img src="../assets/cart.svg" alt="" />
+                <span><router-link to="/cart">购物车</router-link></span>
+              </div>
+              <div class="login-box full-left">
+                <span>登录</span>
+                &nbsp;/&nbsp;
+                <span>注册</span>
+              </div>
+            </div>
+          </el-col>
         </div>
-        <div class="login-bar">
-          <div class="shop-cart full-left">
-            <img src="../assets/cart.svg" alt="" />
-            <span><router-link to="/cart">购物车</router-link></span>
-          </div>
-          <div class="login-box full-left">
-            <span>登录</span>
-            &nbsp;/&nbsp;
-            <span>注册</span>
-          </div>
-        </div>
-      </div>
+      </el-row>
     </div>
   </div>
 </template>
@@ -65,7 +78,6 @@ nav.get_nav_header().then(res =>{
   background: #fff;
 }
 .header .content{
-  max-width: 1366px;
   width: 100%;
   margin: 0 auto;
 }
@@ -287,9 +299,9 @@ nav.get_nav_header().then(res =>{
   background-color: #edf0f2;
 }
 
-
 .header .login-bar{
   margin-top: 20px;
+  margin-right: 20px;
   height: 80px;
   float: right;
 }
