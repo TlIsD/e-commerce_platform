@@ -257,7 +257,12 @@ import datetime
 JWT_AUTH = {
     # 设置JWT的有效期
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),
+    # 自定义载荷
+    'JWT_PAYLOAD_HANDLER': 'platformapi.utils.authenticate.jwt_payload_handler',
 }
 
 # 自定义系统认证采用的用户模型类
 AUTH_USER_MODEL = 'users.User'
+
+# 重写Django认证
+AUTHENTICATION_BACKENDS = ['platformapi.utils.authenticate.CustomAuthBackend', ]
