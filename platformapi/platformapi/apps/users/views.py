@@ -7,7 +7,6 @@ from rest_framework import status
 class LoginAPIView(ObtainJSONWebToken):
     # 登录视图
     def post(self, request, *args, **kwargs):
-        print(f'客户端：{request.data}')
         try:
             api = TencentCloudApi()
 

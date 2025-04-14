@@ -273,7 +273,7 @@ TENCENTCLOUD = {
     'Captcha':{
         'endpoint': 'captcha.tencentcloudapi.com',
         'CaptchaType': 9,
-        'CaptchaAppId': '<CaptchaAppId>',  # 要写成int
+        'CaptchaAppId': '<CaptchaAppId>',  # 要写成int类型
         'AppSecretKey': '<AppSecretKey>',
     }
 }
