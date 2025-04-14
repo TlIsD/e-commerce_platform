@@ -32,7 +32,7 @@
           </el-col>
 
           <el-col>
-            <div class="login-bar">
+            <div class="login-bar" v-if="!store.state.user.user_id">
               <div class="shop-cart full-left">
                 <img src="../assets/cart.svg" alt="" />
                 <span><router-link to="/cart">购物车</router-link></span>
@@ -43,6 +43,31 @@
                 <span>注册</span>
               </div>
             </div>
+
+            <div class="login-bar logined-bar" v-show="store.state.user.user_id">
+              <div class="shop-cart ">
+                <img src="../assets/cart.svg" alt="" />
+                <span><router-link to="/cart">购物车</router-link></span>
+              </div>
+              <div class="login-box ">
+                <span>
+                  <router-link to="">我的课堂</router-link>
+                </span>
+                <el-dropdown>
+                <span class="el-dropdown-link">
+                  <el-avatar class="avatar" size=default src="@/assets/default.jpg"></el-avatar>
+                </span>
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <el-dropdown-item :icon="UserFilled">学习中心</el-dropdown-item>
+                      <el-dropdown-item :icon="List">订单列表</el-dropdown-item>
+                      <el-dropdown-item :icon="Setting">个人设置</el-dropdown-item>
+                      <el-dropdown-item :icon="Close">注销登录</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
+              </div>
+            </div>
           </el-col>
         </div>
       </el-row>
@@ -50,7 +75,7 @@
   </div>
 
   <el-dialog :width="600" v-model="state.show_login" :style="{ borderRadius: '16px' }">
-    <Login></Login>
+    <Login @success_handle="login_success"></Login>
   </el-dialog>
 
 </template>
@@ -60,6 +85,10 @@
 import nav from "../api/nav.js";
 import Login from "./Login.vue";
 import { reactive } from "vue";
+import { UserFilled,List,Setting,Close } from "@element-plus/icons-vue";
+import { useStore } from "vuex";
+
+const store = useStore()
 
 // 请求头部导航数据
 nav.get_nav_header().then(res =>{
@@ -70,7 +99,12 @@ nav.get_nav_header().then(res =>{
 // 弹窗登录组件
 const state = reactive({
   show_login: false,
+  is_login: false,
 })
+
+const login_success = () =>{
+  state.show_login = false;
+}
 </script>
 
 <style scoped>
@@ -351,5 +385,32 @@ const state = reactive({
 }
 .header .login-bar .login-box span:hover{
   color: #000000;
+}
+
+.header .logined-bar .shop-cart{
+  height: 32px;
+  line-height: 32px;
+}
+.logined-bar .login-box{
+  height: 72px;
+  line-height: 72px;
+  position: relative;
+  margin-right: 20px;
+}
+
+.logined-bar .el-dropdown-link{
+  margin-left: 15px;
+  margin-top: -5px;
+}
+
+.logined-bar el-avatar{
+  float: right;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  transition: transform .5s ease-in .1s;
+}
+.logined-bar el-avatar:hover{
+  transform: scale(1.3);
 }
 </style>

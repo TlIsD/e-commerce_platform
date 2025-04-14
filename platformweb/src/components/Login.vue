@@ -29,6 +29,11 @@
 <script setup>
 import user from "../api/user.js";
 import { ElMessage } from "element-plus";
+import {useStore} from 'vuex';
+
+const store = useStore();
+
+const emmit = defineEmits(["success_handle"]);
 
 // 登录
 const login_handler = () => {
@@ -39,8 +44,36 @@ const login_handler = () => {
 
   // 登录请求
   user.login().then((res) => {
-    console.log(res.data)
+    // 先删除原先的状态
+    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
+
+    if(user.remember){
+      // 记住密码
+      localStorage.token = res.data.token;
+    }else {
+      // 不记住
+      sessionStorage.token = res.data.token;
+    }
+
+    // console.log(res.data)
     ElMessage.success('登录成功')
+
+    // 后续处理
+    user.account = ''
+    user.password = ''
+    user.remember = false
+    user.phone = ''
+    user.captcha = ''
+
+    // 获取载荷信息
+    let payload = res.data.token.split('.')[1]
+    let payload_data = JSON.parse(atob(payload))
+    console.log(payload_data)
+    store.commit('login', payload_data)
+
+    emmit('success_handle')
+
   }).catch(err => {
     ElMessage.error('登录失败')
   })

@@ -6,7 +6,7 @@
         <p>-------------------------------------------</p>
       </div>
       <div class="login_box">
-        <Login></Login>
+        <Login @success_handle = 'success_handle'></Login>
       </div>
     </div>
   </div>
@@ -14,6 +14,11 @@
 
 <script setup>
 import Login from "../components/Login.vue";
+import router from "../router/index.js";
+
+const success_handle = () => {
+  router.push("/");
+}
 </script>
 
 <style scoped>

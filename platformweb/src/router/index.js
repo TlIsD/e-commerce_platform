@@ -1,4 +1,5 @@
 import {createRouter, createWebHistory} from "vue-router";
+import store from "../store/index.js";
 
 // 路由列表
 const routes = [
@@ -20,6 +21,16 @@ const routes = [
         name: 'Login',
         component: () => import('../views/Login.vue'),
     },
+    {
+        meta:{
+            title: '个人中心',
+            keepAlive: true,
+            authorization: true,
+        },
+        path: '/user',
+        name: 'User',
+        component: () => import('../views/User.vue'),
+    }
 ]
 
 // 实例化
@@ -28,5 +39,15 @@ const router = createRouter({
     history: createWebHistory(),
     routes,
 });
+
+// 导航守卫
+router.beforeEach((to, from, next) => {
+    document.title = to.meta.title
+    if(to.meta.authorization && !store.getters.getUserInfo){
+        next({name: 'Login'})
+    }else {
+        next()
+    }
+})
 
 export default router;

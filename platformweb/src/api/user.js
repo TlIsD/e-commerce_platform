@@ -9,6 +9,7 @@ const user = reactive({
     phone:'',
     captcha: '',
 
+    // 登录请求处理
     login(){
         return http.post('/users/login/', {
             'username': user.account,
