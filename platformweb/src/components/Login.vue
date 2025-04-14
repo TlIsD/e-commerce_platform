@@ -37,7 +37,7 @@ const store = useStore();
 const emmit = defineEmits(["success_handle"]);
 
 // 填写自己的ID
-const CaptchaAppId = ''
+const CaptchaAppId = '<CaptchaAppId>'
 
 // 验证码
 const show_captcha = () => {
@@ -46,7 +46,7 @@ const show_captcha = () => {
     ElMessage.error('用户名或密码不能为空')
   }
   else{
-    var captcha = new TencentCaptcha(CaptchaAppId, (res)=>{
+    var captcha = new TencentCaptcha('CaptchaAppId', (res)=>{
       console.log(res);
       // 调用登录处理
       login_handler(res)

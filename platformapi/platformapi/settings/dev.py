@@ -266,3 +266,14 @@ AUTH_USER_MODEL = 'users.User'
 
 # 重写Django认证
 AUTHENTICATION_BACKENDS = ['platformapi.utils.authenticate.CustomAuthBackend', ]
+
+TENCENTCLOUD = {
+    'SecretId':'<SecretId>',
+    'SecretKey':'<SecretKey>',
+    'Captcha':{
+        'endpoint': 'captcha.tencentcloudapi.com',
+        'CaptchaType': 9,
+        'CaptchaAppId': '<CaptchaAppId>',  # 要写成int
+        'AppSecretKey': '<AppSecretKey>',
+    }
+}
