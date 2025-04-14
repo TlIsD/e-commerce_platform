@@ -32,6 +32,11 @@ export default createStore({
         // 相当于method
         login(state, user){
             state.user = user
+        },
+        logout(state){
+            state.user = {}
+            localStorage.token = null
+            sessionStorage.token = null
         }
     }
 })

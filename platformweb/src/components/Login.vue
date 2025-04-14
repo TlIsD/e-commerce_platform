@@ -43,37 +43,34 @@ const login_handler = () => {
   }
 
   // 登录请求
-  user.login().then((res) => {
+  user.login({
+    remember: true,
+    account: user.account,
+    password: user.password,
+  }).then((res) => {
     // 先删除原先的状态
     localStorage.removeItem('token');
     sessionStorage.removeItem('token');
 
-    if(user.remember){
-      // 记住密码
-      localStorage.token = res.data.token;
-    }else {
-      // 不记住
-      sessionStorage.token = res.data.token;
-    }
-
     // console.log(res.data)
     ElMessage.success('登录成功')
-
-    // 后续处理
-    user.account = ''
-    user.password = ''
-    user.remember = false
-    user.phone = ''
-    user.captcha = ''
 
     // 获取载荷信息
     let payload = res.data.token.split('.')[1]
     let payload_data = JSON.parse(atob(payload))
-    console.log(payload_data)
+    // console.log(payload_data)
     store.commit('login', payload_data)
 
-    emmit('success_handle')
+    // 后续处理
+    if(!user.remember){
+      user.account = ''
+      user.password = ''
+      user.remember = false
+      user.phone = ''
+      user.captcha = ''
+    }
 
+    emmit('success_handle')
   }).catch(err => {
     ElMessage.error('登录失败')
   })

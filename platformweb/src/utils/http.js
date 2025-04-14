@@ -1,4 +1,5 @@
 import axios from "axios";
+import user from "../api/user.js";
 
 const http = axios.create({
     baseURL: "http://api.platform.cn:8000",
