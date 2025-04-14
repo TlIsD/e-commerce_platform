@@ -10,10 +10,12 @@ const user = reactive({
     captcha: '',
 
     // 登录请求处理
-    login(){
+    login(res){
         return http.post('/users/login/', {
-            'username': user.account,
-            'password': user.password,
+            'ticket': res.ticket,
+            'randstr': res.randstr,
+            'username': this.account,
+            'password': this.password,
         })
     }
 })
