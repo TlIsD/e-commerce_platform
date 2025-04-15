@@ -3,9 +3,9 @@ import {reactive, ref} from "vue";
 
 const user = reactive({
     login_type: 0,
-    account: '',  // 用户名/手机号/邮箱
-    password: '',
-    remember: false,
+    account: localStorage.getItem('account'),  // 用户名/手机号/邮箱
+    password: localStorage.getItem('password'),
+    remember: localStorage.getItem('remember'),
     phone:'',
     captcha: '',
 

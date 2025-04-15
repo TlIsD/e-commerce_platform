@@ -59,9 +59,6 @@ const show_captcha = () => {
 const login_handler = (res) => {
   // 登录请求
   user.login({
-    remember: true,
-    account: user.account,
-    password: user.password,
     ticket: res.ticket,
     randstr: res.randstr
   }).then((res) => {
@@ -85,6 +82,11 @@ const login_handler = (res) => {
       user.remember = false
       user.phone = ''
       user.captcha = ''
+    }else {
+      // 记住密码
+      localStorage.setItem('remember', true)
+      localStorage.setItem('account', user.account)
+      localStorage.setItem('password', user.password)
     }
 
     emmit('success_handle')
