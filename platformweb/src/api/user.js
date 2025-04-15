@@ -8,6 +8,8 @@ const user = reactive({
     remember: localStorage.getItem('remember'),
     phone:'',
     captcha: '',
+    r_password:'',  // 注册密码
+    re_password: '',  // 确认密码
 
     // 登录请求处理
     login(res){
@@ -17,6 +19,10 @@ const user = reactive({
             'username': this.account,
             'password': this.password,
         })
+    },
+
+    check_phone(res){
+        return http.get(`/users/phone/${this.phone}/`)
     }
 })
 

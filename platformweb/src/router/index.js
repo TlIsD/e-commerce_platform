@@ -23,6 +23,15 @@ const routes = [
     },
     {
         meta:{
+            title: '注册',
+            keepAlive: true,
+        },
+        path: '/register',
+        name: 'Register',
+        component: () => import('../views/Register.vue'),
+    },
+    {
+        meta:{
             title: '个人中心',
             keepAlive: true,
             authorization: true,

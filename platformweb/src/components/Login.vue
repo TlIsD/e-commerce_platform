@@ -15,14 +15,18 @@
       <p>忘记密码？</p>
     </div>
     <button class="login_btn" @click="show_captcha">登录</button>
-    <p class="go_login" >没有账号 <span>立即注册</span></p>
+    <p class="go_login">没有账号
+      <span><router-link to="/register" style="color: #2c70b6; cursor:pointer">立即注册</router-link></span>
+    </p>
   </div>
   <div class="inp" v-show="user.login_type===1">
     <input v-model="user.phone" type="text" placeholder="手机号码" class="user">
     <input v-model="user.captcha"  type="text" class="code" placeholder="短信验证码">
     <el-button id="get_code" type="primary">获取验证码</el-button>
     <button class="login_btn">登录</button>
-    <p class="go_login" >没有账号 <span>立即注册</span></p>
+    <p class="go_login">没有账号
+      <span><router-link to="/register" style="color: #2c70b6; cursor:pointer">立即注册</router-link></span>
+    </p>
   </div>
 </template>
 
@@ -82,6 +86,8 @@ const login_handler = (res) => {
       user.remember = false
       user.phone = ''
       user.captcha = ''
+      localStorage.removeItem('account')
+      localStorage.removeItem('password')
     }else {
       // 记住密码
       localStorage.setItem('remember', true)
