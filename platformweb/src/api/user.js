@@ -23,6 +23,13 @@ const user = reactive({
 
     check_phone(res){
         return http.get(`/users/phone/${this.phone}/`)
+    },
+
+    register(data){
+        data.phone = this.phone
+        data.password = this.password
+        data.sms_captcha = this.captcha
+        return http.post('/users/register/', data)
     }
 })
 

@@ -11,3 +11,6 @@ BANNER_SIZE = 10
 
 # 缓存周期
 LIST_CACHE_PAGE_TIME = 60
+
+# 默认头绪
+DEFAULT_AVATAR = 'default.jpg'
