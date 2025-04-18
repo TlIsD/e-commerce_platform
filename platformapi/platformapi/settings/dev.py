@@ -267,13 +267,24 @@ AUTH_USER_MODEL = 'users.User'
 # 重写Django认证
 AUTHENTICATION_BACKENDS = ['platformapi.utils.authenticate.CustomAuthBackend', ]
 
+# 腾讯云配置
 TENCENTCLOUD = {
     'SecretId':'<SecretId>',
     'SecretKey':'<SecretKey>',
     'Captcha':{
         'endpoint': 'captcha.tencentcloudapi.com',
         'CaptchaType': 9,
-        'CaptchaAppId': '<CaptchaAppId>',  # 要写成int类型
+        'CaptchaAppId': '<CaptchaAppId>',  # 要去掉'单引号'写成int类型
         'AppSecretKey': '<AppSecretKey>',
     }
+}
+
+# 容联云短信配置
+RONGLIANYUN = {
+    'accId': '<accId>',
+    'accToken': '<accToken>',
+    'appId': '<appId>',
+    'reg_tid': 1,  # 短信的模版ID
+    'sms_expire': 300,  # 短信有效期
+    'sms_interval': 60,  # 短信发送冷却时间
 }
