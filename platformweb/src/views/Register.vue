@@ -17,7 +17,7 @@
           <input v-model="user.re_password" type="password" placeholder="确认密码" class="user" @blur="check_re_pwd_inp">
           <el-text type="danger" size="small">{{ re_pwd_err }}</el-text>
           <div>
-            <input v-model="user.captcha" type="text" class="code" placeholder="短信验证码" @blur="check_captcha_inp">
+            <input v-model="user.captcha" type="text" class="code" placeholder="短信验证码">
             <el-button id="get_code" type="primary" @click="send_captcha" :disabled="isSmsActivate">{{ user.captcha_btn_text }}</el-button>
           </div>
           <el-text type="danger" size="small">{{ captcha_err }}</el-text>
@@ -35,10 +35,12 @@ import {useStore} from "vuex"
 import "../utils/TCaptcha"
 import user from "../api/user.js";
 import {ElMessage} from "element-plus";
-import router from "../router/index.js";
+import {useRouter} from "vue-router";
 import settings from "../settings.js";
 
 const store = useStore()
+const router = useRouter()
+
 const phone_err = ref(null)
 const pwd_err = ref(null)
 const re_pwd_err = ref(null)
@@ -110,7 +112,7 @@ const show_captcha = () => {
   check_re_pwd_inp()
   check_captcha_inp()
 
-  if(!isActivate){
+  if(!isActivate.value){
     var captcha = new TencentCaptcha(settings.CaptchaAppId, (res)=>{
       console.log(res);
       // 调用注册处理
@@ -144,10 +146,11 @@ const register_handler = (res)=> {
     user.re_password = ""
     user.captcha = ""
     user.remember = false
-    // 成功提示
-    ElMessage.success("注册成功！");
+
     // 路由跳转到首页
     router.push("/");
+    // 成功提示
+    ElMessage.success("注册成功！");
 
   })
 }
@@ -156,12 +159,8 @@ const register_handler = (res)=> {
 const send_captcha = () => {
   check_phone_inp()
 
-  if(isSmsActivate){
-    return false
-  }
-
   if (user.is_send){
-    ElMessage.error('点击过于频繁')
+    isSmsActivate.value = true
   }
 
   let time = user.captcha_interval
@@ -173,7 +172,7 @@ const send_captcha = () => {
     user.interval = setInterval(() => {
       if (time < 1){
         user.is_send = false
-        user.captcha_btn_text = '点击重新获取'
+        user.captcha_btn_text = '点击获取验证码'
       }else{
         time -= 1
         user.captcha_btn_text = `${time}秒后重新获取`
@@ -187,7 +186,7 @@ const send_captcha = () => {
     user.interval = setInterval(() => {
       if (time < 1){
         user.is_send = false
-        user.captcha_btn_text = '点击重新获取'
+        user.captcha_btn_text = '点击获取验证码'
       }else{
         time -= 1
         user.captcha_btn_text = `${time}秒后重新获取`

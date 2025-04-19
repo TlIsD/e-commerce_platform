@@ -1,8 +1,10 @@
+from django_redis import get_redis_connection
 from rest_framework import serializers
 from .models import User
 from rest_framework_jwt.settings import api_settings
 import re, constants
 from platformapi.utils.tencentcloudapi import TencentCloudApi, TencentCloudSDKException
+from authenticate import generate_jwt_token
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
@@ -28,34 +30,43 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             }
         }
 
-        def validate(self, data):
-            print(data)
-            # 验证客户端数据
-            phone = data.get('phone', None)
-            if not re.match(r'^1[3-9]\d{9}$', phone):
-                raise serializers.ValidationError(detail='手机号格式不正确！', code='phone')
+    def validate(self, data):
+        print(data)
+        # 验证客户端数据
+        phone = data.get('phone', None)
+        if not re.match(r'^1[3-9]\d{9}$', phone):
+            raise serializers.ValidationError(detail='手机号格式不正确！', code='phone')
 
-            try:
-                User.objects.get(phone=phone)
-                # 防止快速点击造成的反复注册
-                raise serializers.ValidationError(detail='该手机号已注册')
-            except User.DoesNotExist:
-                pass
+        try:
+            User.objects.get(phone=phone)
+            # 防止快速点击造成的反复注册
+            raise serializers.ValidationError(detail='该手机号已注册')
+        except User.DoesNotExist:
+            pass
 
-            # 验证防水墙验证码
-            api = TencentCloudApi()
+        # 验证防水墙验证码
+        api = TencentCloudApi()
 
-            result = api.captcha(
-                data.get("ticket"),
-                data.get("randstr"),
-                self.context['request']._request.META.get("REMOTE_ADDR"),
-            )
-            if not result:
-                raise serializers.ValidationError(detail='验证码校验失败！')
+        result = api.captcha(
+            data.get("ticket"),
+            data.get("randstr"),
+            self.context['request']._request.META.get("REMOTE_ADDR"),
+        )
+        if not result:
+            raise serializers.ValidationError(detail='验证码校验失败！')
 
-            # todo 验证短信验证码
+        # 验证短信验证码
+        redis = get_redis_connection('sms_code')
+        code = redis.get(f"sms_{phone}")
+        if code is None:
+            raise serializers.ValidationError(detail='验证码已失效', code='sms_captcha')
 
-            return data
+        if code.decode() != data.get('sms_captcha'):
+            raise serializers.ValidationError(detail='验证码错误', code='sms_captcha')
+
+        redis.delete(f"sms_{phone}")
+
+        return data
 
     def create(self, validated_data):
         validated_data.pop('sms_captcha', None)
@@ -74,10 +85,6 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         )
 
         # 注册后免登录
-        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
-        # 生成载荷
-        payload = jwt_payload_handler(user)
-        user.token = jwt_encode_handler(payload)
+        user.token = generate_jwt_token(user)
 
         return user
