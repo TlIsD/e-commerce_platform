@@ -26,10 +26,13 @@
     </p>
   </div>
   <div class="inp" v-show="user.login_type===1">
-    <input v-model="user.phone" type="text" placeholder="手机号码" class="user">
+    <div>
+      <input v-model="user.phone" type="text" placeholder="手机号码" class="user" @blur="check_phone_inp">
+      <el-text type="danger" size="small">{{ phone_err }}</el-text>
+    </div>
     <input v-model="user.captcha"  type="text" class="code" placeholder="短信验证码">
-    <el-button id="get_code" type="primary">获取验证码</el-button>
-    <button class="login_btn">登录</button>
+    <el-button id="get_code" type="primary" :disabled="isSmsActivate">获取验证码</el-button>
+    <button class="login_btn" @click="show_captcha">登录</button>
     <p class="go_login">没有账号
       <span><router-link to="/register" style="color: #2c70b6; cursor:pointer">立即注册</router-link></span>
     </p>
@@ -42,32 +45,60 @@ import { ElMessage } from "element-plus";
 import {useStore} from 'vuex';
 import '../utils/TCaptcha.js'
 import settings from "../settings.js";
+import {ref} from "vue";
 
 const store = useStore();
 
 const emmit = defineEmits(["success_handle"]);
 
-// 验证码
-const show_captcha = () => {
-  if(user.rem_account && user.rem_password){
-    user.account = user.rem_account
-    user.password = user.rem_password
-  }
-  if(user.account.length < 1 || user.password.length < 1){
-    // 错误提示
-    ElMessage.error('用户名或密码不能为空')
-  }
-  else{
-    var captcha = new TencentCaptcha(settings.CaptchaAppId, (res)=>{
-      // console.log(res);
-      // 调用登录处理
-      login_handler(res)
-    })
-    captcha.show()
+const phone_err = ref(null)
+var isSmsActivate = ref(false)
+
+const check_phone_inp = () =>{
+  phone_err.value = ''
+  isSmsActivate.value = false
+  if(user.phone.length < 1){
+    phone_err.value = '请填写手机号'
+    isSmsActivate.value = true
+  }else if(!/1[3-9]\d{9}/.test(user.phone)){
+    phone_err.value = '手机号格式错误'
+    isSmsActivate.value = true
   }
 }
 
-// 登录
+// 验证码
+const show_captcha = () => {
+  if(user.login_type===0){
+    if(user.rem_account && user.rem_password){
+      user.account = user.rem_account
+      user.password = user.rem_password
+    }
+    if(user.account.length < 1 || user.password.length < 1){
+      // 错误提示
+      ElMessage.error('用户名或密码不能为空')
+    }
+    else{
+      var captcha = new TencentCaptcha(settings.CaptchaAppId, (res)=>{
+        // console.log(res);
+        // 调用登录处理
+        login_handler(res)
+      })
+      captcha.show()
+    }
+  }else if(user.login_type===1){
+    if(user.phone.length < 1 || user.captcha.length < 1){
+      ElMessage.error('手机号或验证码不能为空')
+    }else{
+      ElMessage.error('尚未开发完成')
+      // var captcha = new TencentCaptcha(settings.CaptchaAppId, (res)=>{
+      //   phone_login_handler(res)
+      // })
+      // captcha.show()
+    }
+  }
+}
+
+// 账号密码登录
 const login_handler = (res) => {
   // 登录请求
   user.login({
@@ -79,13 +110,14 @@ const login_handler = (res) => {
     sessionStorage.removeItem('token');
 
     // console.log(res.data)
-    ElMessage.success('登录成功')
 
     // 获取载荷信息
     let payload = res.data.token.split('.')[1]
     let payload_data = JSON.parse(atob(payload))
     // console.log(payload_data)
     store.commit('login', payload_data)
+
+    ElMessage.success('登录成功')
 
     // 后续处理
     if(!user.remember){
@@ -111,6 +143,35 @@ const login_handler = (res) => {
     ElMessage.error('登录失败')
   })
 }
+
+// // 手机验证码登录
+// const phone_login_handler = (res) => {
+//   user.login({
+//     ticket: res.ticket,
+//     randstr: res.randstr
+//   }).then((res) => {
+//     // 先删除原先的状态
+//     localStorage.removeItem('token');
+//     sessionStorage.removeItem('token');
+//
+//     console.log('res:::', res)
+//
+//     // 获取载荷信息
+//     let payload = res.data.token.split('.')[1]
+//     let payload_data = JSON.parse(atob(payload))
+//     console.log('payload:::', payload_data)
+//
+//     store.commit('login', payload_data)
+//     ElMessage.success('登录成功')
+//
+//     user.phone = ''
+//     user.captcha = ''
+//
+//     emmit('success_handle')
+//   }).catch(err => {
+//     ElMessage.error('登录失败')
+//   })
+// }
 </script>
 
 <style scoped>

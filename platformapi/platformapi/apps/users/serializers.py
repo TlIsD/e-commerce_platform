@@ -88,3 +88,32 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         user.token = generate_jwt_token(user)
 
         return user
+
+# class UserLoginSerializer(serializers.Serializer):
+#     sms_captcha = serializers.CharField(min_length=4, max_length=6, required=True, write_only=True, help_text='验证码')
+#     ticket = serializers.CharField(write_only=True, required=True, help_text='临时凭证')
+#     randstr = serializers.CharField(write_only=True, required=True, help_text='随机字符串')
+#     token = serializers.CharField(read_only=True)
+#
+#     class Meta:
+#         model = User
+#         fields = ['phone', 'password', 'sms_captcha', 'token', 'ticket', 'randstr']
+#         extra_kwargs = {
+#             'phone': {
+#                 'required': True,
+#                 'read_only': True,
+#             },
+#             'password': {
+#                 'required': True,
+#                 'read_only': True,
+#             }
+#         }
+#
+#     def validate(self, attrs):
+#         phone = attrs.get('phone')
+#         user =User.objects.filter(phone=phone).first()
+#         if user:
+#             user.token = generate_jwt_token(user)
+#             return user
+#         else:
+#             raise serializers.ValidationError('用户不存在')

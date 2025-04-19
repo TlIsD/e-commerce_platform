@@ -18,12 +18,22 @@ const user = reactive({
 
     // 登录请求处理
     login(res){
-        return http.post('/users/login/', {
-            'ticket': res.ticket,
-            'randstr': res.randstr,
-            'username': this.account,
-            'password': this.password,
-        })
+        if (this.login_type === 0){
+            return http.post('/users/login/', {
+                'ticket': res.ticket,
+                'randstr': res.randstr,
+                'type': this.login_type,
+                'username': this.account,
+                'password': this.password,
+            })
+
+        }else if (this.login_type === 1){
+            return http.get(`/users/phone_login/${this.phone}`, {
+                'ticket': res.ticket,
+                'randstr': res.randstr,
+                'type': this.login_type,
+            })
+        }
     },
 
     check_phone(res){

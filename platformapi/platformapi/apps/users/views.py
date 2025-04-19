@@ -2,7 +2,7 @@ import random
 from django.conf import settings
 from ronglianyunapi import send_sms
 from django_redis import get_redis_connection
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, GenericAPIView, RetrieveAPIView
 from rest_framework.views import APIView
 from rest_framework_jwt.views import ObtainJSONWebToken
 
@@ -12,7 +12,6 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from .serializers import UserRegisterSerializer
-
 
 # Create your views here.
 class LoginAPIView(ObtainJSONWebToken):
@@ -33,8 +32,15 @@ class LoginAPIView(ObtainJSONWebToken):
                 return super().post(request, *args, **kwargs)
             else:
                 raise TencentCloudSDKException
+
         except TencentCloudSDKException as err:
             return Response({"errmsg": "验证码校验失败！"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# class PhoneLoginAPIView(RetrieveAPIView):
+#     queryset = User.objects.all()
+#     serializer_class = UserLoginSerializer
+#     lookup_field = 'phone'
 
 
 class PhoneAPIView(APIView):
