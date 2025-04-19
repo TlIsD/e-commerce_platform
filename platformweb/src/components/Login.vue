@@ -4,8 +4,14 @@
     <span :class="{active:user.login_type===1}" @click="user.login_type=1">短信登录</span>
   </div>
   <div class="inp" v-if="user.login_type===0">
-    <input v-model="user.account" type="text" placeholder="用户名 / 手机号码" class="user">
-    <input v-model="user.password" type="password" class="pwd" placeholder="密码">
+    <div v-if="user.rem_password && user.rem_account">
+      <input v-model="user.rem_account" type="text" placeholder="用户名 / 手机号码" class="user">
+      <input v-model="user.rem_password" type="password" class="pwd" placeholder="密码">
+    </div>
+    <div v-else>
+      <input v-model="user.account" type="text" placeholder="用户名 / 手机号码" class="user">
+      <input v-model="user.password" type="password" class="pwd" placeholder="密码">
+    </div>
     <div id="geetest1"></div>
     <div class="remember">
       <label>
@@ -43,6 +49,10 @@ const emmit = defineEmits(["success_handle"]);
 
 // 验证码
 const show_captcha = () => {
+  if(user.rem_account && user.rem_password){
+    user.account = user.rem_account
+    user.password = user.rem_password
+  }
   if(user.account.length < 1 || user.password.length < 1){
     // 错误提示
     ElMessage.error('用户名或密码不能为空')
@@ -80,17 +90,20 @@ const login_handler = (res) => {
     // 后续处理
     if(!user.remember){
       user.account = ''
+      user.rem_account = ''
       user.password = ''
+      user.rem_password = ''
       user.remember = false
       user.phone = ''
       user.captcha = ''
-      localStorage.removeItem('account')
-      localStorage.removeItem('password')
+      localStorage.removeItem('remember');
+      localStorage.removeItem('rem_account')
+      localStorage.removeItem('rem_password')
     }else {
       // 记住密码
       localStorage.setItem('remember', true)
-      localStorage.setItem('account', user.account)
-      localStorage.setItem('password', user.password)
+      localStorage.setItem('rem_account', user.account)
+      localStorage.setItem('rem_password', user.password)
     }
 
     emmit('success_handle')

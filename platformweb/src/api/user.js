@@ -3,13 +3,18 @@ import {reactive, ref} from "vue";
 
 const user = reactive({
     login_type: 0,
-    account: localStorage.getItem('account'),  // 用户名/手机号/邮箱
-    password: localStorage.getItem('password'),
+    rem_account: localStorage.getItem('rem_account'),  // 用户名/手机号/邮箱
+    account: '',
+    rem_password: localStorage.getItem('rem_password'),
+    password: '',
     remember: localStorage.getItem('remember'),
     phone:'',
     captcha: '',
     r_password:'',  // 注册密码
     re_password: '',  // 确认密码
+    captcha_interval: 60, //短信发送冷却时间
+    interval: null, // 定时器
+    captcha_btn_text: '点击获取验证码',
 
     // 登录请求处理
     login(res){
@@ -25,11 +30,16 @@ const user = reactive({
         return http.get(`/users/phone/${this.phone}/`)
     },
 
+    // 注册请求处理
     register(data){
         data.phone = this.phone
         data.password = this.password
         data.sms_captcha = this.captcha
         return http.post('/users/register/', data)
+    },
+
+    get_sms_captcha(){
+        return http.get(`/users/code/${this.phone}/`)
     }
 })
 

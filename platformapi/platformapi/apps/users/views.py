@@ -61,7 +61,7 @@ class SmsCodeAPIView(APIView):
         # 判断是否发送处于冷却中
         interval = redis.ttl(f'interval_{phone}')
         if interval != -2:
-            return Response({'err': f'点击过于频繁，请{interval}后点击'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'err': f'点击过于频繁，请{interval}后点击', 'interval': interval}, status=status.HTTP_400_BAD_REQUEST)
 
         # 随机生成短信验证码
         captcha = f'{random.randint(0, 9999):04d}'

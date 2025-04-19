@@ -18,7 +18,7 @@
           <el-text type="danger" size="small">{{ re_pwd_err }}</el-text>
           <div>
             <input v-model="user.captcha" type="text" class="code" placeholder="短信验证码" @blur="check_captcha_inp">
-            <el-button id="get_code" type="primary">获取验证码</el-button>
+            <el-button id="get_code" type="primary" @click="send_captcha" :disabled="isSmsActivate">{{ user.captcha_btn_text }}</el-button>
           </div>
           <el-text type="danger" size="small">{{ captcha_err }}</el-text>
           <button class="register_btn" :disabled="isActivate" :class="{'deactivate': isActivate}" @click="show_captcha">注册</button>
@@ -45,30 +45,35 @@ const re_pwd_err = ref(null)
 const captcha_err = ref(null)
 
 var isActivate = ref(false)
+var isSmsActivate = ref(false)
 
 const check_phone_inp = () =>{
   phone_err.value = ''
   isActivate.value = false
+  isSmsActivate.value = false
   if(user.phone.length < 1){
     phone_err.value = '请填写手机号'
     isActivate.value = true
+    isSmsActivate.value = true
   }else if(/1[3-9]\d{9}/.test(user.phone)){
     // 发送ajax验证手机号是否已经注册
     user.check_phone().catch(error=>{
       phone_err.value = error.response.data.err;
-      isActivate.value = false
+      isActivate.value = true
+      isSmsActivate.value = true
     })
   }else {
     // 手机号格式错误
     phone_err.value = '手机号格式错误'
-    isActivate.value = false
+    isActivate.value = true
+    isSmsActivate.value = true
   }
 }
 
 const check_pwd_inp = () =>{
   pwd_err.value = ''
   isActivate.value = false
-  if(user.phone.length < 1){
+  if(user.password.length < 1){
     pwd_err.value = '请填写密码'
     isActivate.value = true
   }else if (user.password.length < 6 || user.password.length > 16) {
@@ -80,7 +85,7 @@ const check_pwd_inp = () =>{
 const check_re_pwd_inp = () =>{
   re_pwd_err.value = ''
   isActivate.value = false
-  if(user.phone.length < 1){
+  if(user.re_password.length < 1){
     re_pwd_err.value = '请再次输入密码'
     isActivate.value = true
   }else if (user.password !== user.re_password) {
@@ -100,12 +105,19 @@ const check_captcha_inp = () =>{
 
 // 验证码
 const show_captcha = () => {
-  var captcha = new TencentCaptcha(settings.CaptchaAppId, (res)=>{
-    console.log(res);
-    // 调用注册处理
-    register_handler(res)
-  })
-  captcha.show()
+  check_phone_inp()
+  check_pwd_inp()
+  check_re_pwd_inp()
+  check_captcha_inp()
+
+  if(!isActivate){
+    var captcha = new TencentCaptcha(settings.CaptchaAppId, (res)=>{
+      console.log(res);
+      // 调用注册处理
+      register_handler(res)
+    })
+    captcha.show()
+  }
 }
 
 const register_handler = (res)=> {
@@ -136,6 +148,51 @@ const register_handler = (res)=> {
     ElMessage.success("注册成功！");
     // 路由跳转到首页
     router.push("/");
+
+  })
+}
+
+// 发送验证码
+const send_captcha = () => {
+  check_phone_inp()
+
+  if(isSmsActivate){
+    return false
+  }
+
+  if (user.is_send){
+    ElMessage.error('点击过于频繁')
+  }
+
+  let time = user.captcha_interval
+  // 发送短信请求
+  user.get_sms_captcha().then(res=>{
+    ElMessage.success('短信已发送，请留意您的手机！')
+    user.is_send = true
+    clearInterval(user.interval)
+    user.interval = setInterval(() => {
+      if (time < 1){
+        user.is_send = false
+        user.captcha_btn_text = '点击重新获取'
+      }else{
+        time -= 1
+        user.captcha_btn_text = `${time}秒后重新获取`
+      }
+    }, 1000)
+  }).catch(error=>{
+    ElMessage.error(error?.response?.data?.err)
+    time = error?.response?.data?.interval
+    // 冷却时间
+    clearInterval(user.interval)
+    user.interval = setInterval(() => {
+      if (time < 1){
+        user.is_send = false
+        user.captcha_btn_text = '点击重新获取'
+      }else{
+        time -= 1
+        user.captcha_btn_text = `${time}秒后重新获取`
+      }
+    }, 1000)
 
   })
 }
