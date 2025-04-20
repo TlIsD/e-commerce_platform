@@ -1,7 +1,8 @@
 import random
 from django.conf import settings
 # from ronglianyunapi import send_sms
-from mycelery.sms.tasks import send_sms
+# from mycelery.sms.tasks import send_sms
+from .tasks import send_sms
 from django_redis import get_redis_connection
 from rest_framework.generics import CreateAPIView, GenericAPIView, RetrieveAPIView
 from rest_framework.views import APIView

@@ -288,3 +288,35 @@ RONGLIANYUN = {
     'sms_expire': 300,  # 短信有效期
     'sms_interval': 60,  # 短信发送冷却时间
 }
+
+
+# celery异步任务队列框架配置项
+CELERY_BROKER_URL = 'redis://:@127.0.0.1:6379/14'
+CELERY_RESULT_BACKEND = 'redis://:@127.0.0.1:6379/15'
+# 时区, 与Django的时区同步
+CELERY_TIMEZONE = TIME_ZONE
+# 防止死锁
+CELERY_FORCE_EXECV = True
+# 设置并发的worker数量
+CELERY_CONCURRENCY = 200
+# 设置失败允许重试  如果设置为true, 必须在异步任务中指定重试次数
+CELERY_ACKS_LATE = True
+# 每个worker工作进程最多执行500个任务被销毁, 可防止内存泄漏
+CELERY_MAX_TASKS_PER_CHILDREN = 500
+# 单个任务的最大运行时间, 超时会被杀死
+CELERY_TIME_LIMIT = 10 * 60
+# 任务发出后, 经过一段时间未收到acknowledge, 就将任务重新交给其他worker执行
+CELERY_DISABLE_RATE_LIMITS = True
+# celery的任务结果内容格式
+CELERY_ACCEPT_CONTENT = ['json', 'pickle']
+
+
+CELERY_BEAT_SCHEDULE = {
+    # 定时任务的注册标记符(必须唯一)
+    'user-send_sms1': {
+        # 定时任务的名称
+        'task': 'send_sms1',
+        # 定时任务的调用时间, 10表示每十秒调用一次add任务, 也可以用crontab设置
+        'schedule': 10,
+    }
+}
