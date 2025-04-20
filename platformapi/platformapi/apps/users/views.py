@@ -1,6 +1,7 @@
 import random
 from django.conf import settings
-from ronglianyunapi import send_sms
+# from ronglianyunapi import send_sms
+from mycelery.sms.tasks import send_sms
 from django_redis import get_redis_connection
 from rest_framework.generics import CreateAPIView, GenericAPIView, RetrieveAPIView
 from rest_framework.views import APIView
@@ -76,7 +77,9 @@ class SmsCodeAPIView(APIView):
         # 短信间隔时间
         sms_interval = settings.RONGLIANYUN.get('sms_interval')
         # 调用第三方sdk发送短信
-        send_sms(settings.RONGLIANYUN.get('reg_tid'), phone, datas=(captcha, time // 60))
+        # send_sms(settings.RONGLIANYUN.get('reg_tid'), phone, datas=(captcha, time // 60))
+        # 异步发送短信
+        send_sms.delay(settings.RONGLIANYUN.get('reg_tid'), phone, datas=(captcha, time // 60))
 
         # 将验证码记录到redis中，并以time作为有效期
         pipe = redis.pipeline()
