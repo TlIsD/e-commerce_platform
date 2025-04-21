@@ -91,7 +91,6 @@ import user from "../api/user.js";
 
 const store = useStore()
 
-const avatar = user.
 
 // 请求头部导航数据
 nav.get_nav_header().then(res =>{
