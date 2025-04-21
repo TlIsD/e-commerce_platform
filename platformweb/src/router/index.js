@@ -34,12 +34,21 @@ const routes = [
         meta:{
             title: '个人中心',
             keepAlive: true,
-            authorization: true,
+            authorization: true,  // 是否要验证
         },
         path: '/user',
         name: 'User',
         component: () => import('../views/User.vue'),
-    }
+    },
+    {
+        meta:{
+            title: '课程信息',
+            keepAlive: true,
+        },
+        path: '/project',
+        name: 'Course',
+        component: () => import('../views/Course.vue'),
+    },
 ]
 
 // 实例化

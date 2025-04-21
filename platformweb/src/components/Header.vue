@@ -55,7 +55,7 @@
                 </span>
                 <el-dropdown>
                 <span class="el-dropdown-link">
-                  <el-avatar class="avatar" size=default src="@/assets/default.jpg"></el-avatar>
+                  <el-avatar class="avatar" size=default src="avatar"></el-avatar>
                 </span>
                   <template #dropdown>
                     <el-dropdown-menu>
@@ -87,8 +87,11 @@ import Login from "./Login.vue";
 import { reactive } from "vue";
 import { UserFilled,List,Setting,Close } from "@element-plus/icons-vue";
 import { useStore } from "vuex";
+import user from "../api/user.js";
 
 const store = useStore()
+
+const avatar = user.
 
 // 请求头部导航数据
 nav.get_nav_header().then(res =>{

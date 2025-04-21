@@ -50,7 +50,11 @@ const user = reactive({
 
     get_sms_captcha(){
         return http.get(`/users/code/${this.phone}/`)
-    }
+    },
+
+    get_avatar(){
+        return http.get(`/users/code/${this.phone}/`)
+    },
 })
 
 export default user
