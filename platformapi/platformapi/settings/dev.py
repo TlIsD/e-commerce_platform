@@ -17,6 +17,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 import sys
 sys.path.insert(0, str(BASE_DIR/"apps"))
+sys.path.insert(0, str(BASE_DIR/"utils"))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -27,7 +28,10 @@ SECRET_KEY = 'django-insecure-k-96en6cqo1m+-ffm=(+wl)(et$pz@0gp6xt(-!geq)#7%=!nt
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# 允许客户端用任意域名访问该站点
+ALLOWED_HOSTS = [
+    "*"
+]
 
 
 # Application definition
@@ -39,19 +43,26 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'rest_framework',
+    'corsheaders',
+
     'home',
+    'users'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'platformapi.urls'
 
@@ -130,6 +141,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+# 静态文件目录
+STATICFILES_DIRS = [
+    str(BASE_DIR / "static"),
+]
+
+# 上传文件根目录
+MEDIA_ROOT = BASE_DIR / "upload"
+MEDIA_URL = '/upload/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -139,14 +158,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-<<<<<<< HEAD
-    'formatters': {
-        'verbose': {  # 详细格式
-            # 格式定义：https://docs.python.org/3/library/logging.html#logrecord-attributes
-=======
     'formatters': { # 日志格式设置
         'verbose': { # 详细格式
->>>>>>> develop
             # levelname 日志等级
             # asctime   发生时间
             # module    文件名
@@ -156,11 +169,7 @@ LOGGING = {
             'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
             'style': '{', # 变量格式分隔符
         },
-<<<<<<< HEAD
-        'simple': { # 简单格式
-=======
         'simple': {
->>>>>>> develop
             'format': '{levelname} {message}',
             'style': '{',
         },
@@ -170,11 +179,7 @@ LOGGING = {
             '()': 'django.utils.log.RequireDebugTrue',
         },
     },
-<<<<<<< HEAD
-    'handlers': { # 日志处理流程，console或者mail_admins都是自定义的。
-=======
     'handlers': { # 日志处理流程
->>>>>>> develop
         'console': {
             'level': 'DEBUG', # 设置当前日志处理流程中的日志最低等级
             'filters': ['require_debug_true'], # 当前日志处理流程的日志过滤
@@ -200,8 +205,6 @@ LOGGING = {
             'propagate': True,
         },
     }
-<<<<<<< HEAD
-=======
 }
 
 CACHES = {
@@ -240,5 +243,80 @@ SESSION_CACHE_ALIAS = "session"
 REST_FRAMEWORK = {
     # 自定义异常处理
     'EXCEPTION_HANDLER': 'platformapi.utils.exceptions.custom_exception_handler',
->>>>>>> develop
+
+    # 自定义认证
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        # JWT认证
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    )
+}
+
+import datetime
+JWT_AUTH = {
+    # 设置JWT的有效期
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),
+    # 自定义载荷
+    'JWT_PAYLOAD_HANDLER': 'platformapi.utils.authenticate.jwt_payload_handler',
+}
+
+# 自定义系统认证采用的用户模型类
+AUTH_USER_MODEL = 'users.User'
+
+# 重写Django认证
+AUTHENTICATION_BACKENDS = ['platformapi.utils.authenticate.CustomAuthBackend', ]
+
+# 腾讯云配置
+TENCENTCLOUD = {
+    'SecretId':'<SecretId>',
+    'SecretKey':'<SecretKey>',
+    'Captcha':{
+        'endpoint': 'captcha.tencentcloudapi.com',
+        'CaptchaType': 9,
+        'CaptchaAppId': '<CaptchaAppId>',  # 要去掉'单引号'写成int类型
+        'AppSecretKey': '<AppSecretKey>',
+    }
+}
+
+# 容联云短信配置
+RONGLIANYUN = {
+    'accId': '<accId>',
+    'accToken': '<accToken>',
+    'appId': '<appId>',
+    'reg_tid': 1,  # 短信的模版ID
+    'sms_expire': 300,  # 短信有效期
+    'sms_interval': 60,  # 短信发送冷却时间
+}
+
+
+# celery异步任务队列框架配置项
+CELERY_BROKER_URL = 'redis://:@127.0.0.1:6379/14'
+CELERY_RESULT_BACKEND = 'redis://:@127.0.0.1:6379/15'
+# 时区, 与Django的时区同步
+CELERY_TIMEZONE = TIME_ZONE
+# 防止死锁
+CELERY_FORCE_EXECV = True
+# 设置并发的worker数量
+CELERY_CONCURRENCY = 200
+# 设置失败允许重试  如果设置为true, 必须在异步任务中指定重试次数
+CELERY_ACKS_LATE = True
+# 每个worker工作进程最多执行500个任务被销毁, 可防止内存泄漏
+CELERY_MAX_TASKS_PER_CHILDREN = 500
+# 单个任务的最大运行时间, 超时会被杀死
+CELERY_TIME_LIMIT = 10 * 60
+# 任务发出后, 经过一段时间未收到acknowledge, 就将任务重新交给其他worker执行
+CELERY_DISABLE_RATE_LIMITS = True
+# celery的任务结果内容格式
+CELERY_ACCEPT_CONTENT = ['json', 'pickle']
+
+
+CELERY_BEAT_SCHEDULE = {
+    # 定时任务的注册标记符(必须唯一)
+    'user-send_sms1': {
+        # 定时任务的名称
+        'task': 'send_sms1',
+        # 定时任务的调用时间, 10表示每十秒调用一次add任务, 也可以用crontab设置
+        'schedule': 10,
+    }
 }

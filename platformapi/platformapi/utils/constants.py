@@ -1,0 +1,16 @@
+# 导航头部
+NAV_HEADER_POSITION = 0
+NAV_HEADER_SIZE = 5
+
+# 导航脚部
+NAV_FOOTER_POSITION = 1
+NAV_FOOTER_SIZE = 10
+
+# 轮播图
+BANNER_SIZE = 10
+
+# 缓存周期
+LIST_CACHE_PAGE_TIME = 60
+
+# 默认头绪
+DEFAULT_AVATAR = 'default.jpg'
