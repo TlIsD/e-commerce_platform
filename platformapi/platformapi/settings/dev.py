@@ -37,6 +37,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'simpleui',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,7 +46,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
-    'corsheaders',
+    'corsheaders',  # cors跨域子应用
+    'ckeditor',  # 富文本编辑
+    'ckeditor_uploader',  # 上传文件子应用
 
     'home',
     'users',
@@ -57,7 +60,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -127,9 +130,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'zh-hans'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
@@ -319,5 +322,23 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'send_sms1',
         # 定时任务的调用时间, 10表示每十秒调用一次add任务, 也可以用crontab设置
         'schedule': 10,
+    }
+}
+
+# ckeditor富文本编辑器配置
+# 上传文件的存储路径
+CKEDITOR_UPLOAD_PATH = 'ckeditor/'
+# 工具条配置
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'Custom',  # 自定义
+        'toolbar_Custom': [
+            ['Bold', 'Italic', 'Underline', 'Image', 'Styles', 'Format', 'Font', 'FontSize',],
+            ['NumberedList', 'BulletedList', '-', 'Outdent', 'Ident', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+            ['Link', 'Unlink', 'Table'],
+            ['RemoveFormat', 'Source'],
+        ],
+        # 编辑器高度
+        'height': 120,
     }
 }
