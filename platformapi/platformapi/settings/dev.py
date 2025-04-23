@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'corsheaders',
 
     'home',
-    'users'
+    'users',
+    'courses',
 ]
 
 MIDDLEWARE = [
@@ -95,7 +96,7 @@ DATABASES = {
         'PORT': 3306,
         'HOST': 'localhost',
         'USER': 'commerce_user',
-        'PASSWORD': 'commerce',
+        'PASSWORD': '123',
         'POOL_OPTIONS': {
             'POOL_SIZE': 10,
             'MAX_OVERFLOW': 10,
