@@ -6,7 +6,7 @@ from .models import CourseDirection, CourseCategory, Course, Teacher, CourseChap
 class CourseCategoryInLine(admin.StackedInline):
     # 课程分类内嵌类
     model = CourseCategory
-    fields = ["id", "name", "orders"]
+    fields = ["id", "name", "order"]
 
 
 class CourseDirectionModelAdmin(admin.ModelAdmin):
@@ -42,7 +42,7 @@ class CourseCategoryModelAdmin(admin.ModelAdmin):
         ("必填", {'fields': ('name','direction', 'remark')}),
         ("选填", {
             'classes': ('collapse',),
-            'fields': ('is_show', 'orders'),
+            'fields': ('is_show', 'order'),
         }),
     )
 
@@ -72,7 +72,7 @@ admin.site.register(CourseCategory, CourseCategoryModelAdmin)
 
 class CourseModelAdmin(admin.ModelAdmin):
     # 课程信息模型管理器
-    list_display = ["id","name",'course_cover',"course_type","level","pub_date","students","lessons","price"]
+    list_display = ["id","name",'course_cover_small',"course_type","level","pub_date","students","lessons","price"]
     # 分页配置，一页数据量
     list_per_page = 10
 
@@ -82,7 +82,7 @@ admin.site.register(Course, CourseModelAdmin)
 
 class TeacherModelAdmin(admin.ModelAdmin):
     # 教师信息模型管理器
-    list_display = ["id","name","avatar","title","role","signature"]
+    list_display = ["id","name","avatar_small","title","role","signature"]
     # 分页配置，一页数据量
     list_per_page = 10
     # 搜索字段
@@ -106,10 +106,9 @@ class CourseLessonModelAdmin(admin.ModelAdmin):
     # 分页配置，一页数据量
     list_per_page = 10
 
-    # 下面是旧版本写法，django2.0版本  ->  django3.0以后，建议在模型中声明自定义字段  ---> text2属于新版本写法
     def text(self, obj):
         return obj.__str__()
-    text.admin_order_field = "orders"
+    text.admin_order_field = "order"
     text.short_description = "课时名称"
 
 
