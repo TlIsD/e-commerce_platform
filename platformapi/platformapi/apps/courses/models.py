@@ -48,7 +48,7 @@ class Course(BaseModel):
         (2, '预上线'),
     )
     # course_cover = models.ImageField(upload_to="courses/cover", max_length=255, verbose_name="封面图片", blank=True, null=True)
-    course_cover = StdImageField(validators={
+    course_cover = StdImageField(variations={
         'thumb_1080x608': (1080, 608),  # 高清图
         'thumb_540x304': (540, 304),  # 中等比例
         'thumb_108x61': (108, 61, True),  # 小图 保持图片质量
@@ -119,7 +119,7 @@ class Teacher(BaseModel):
     title = models.CharField(max_length=64, verbose_name="职位、职称")
     signature = models.CharField(max_length=255, blank=True, null=True, verbose_name="导师签名")
     # avatar = models.ImageField(upload_to="teacher", null=True, verbose_name="讲师头像")
-    avatar = StdImageField(validators={
+    avatar = StdImageField(variations={
         'thumb_800x800': (800, 800),  # large
         'thumb_400x400': (400, 400),  # medium
         'thumb_50x50': (50, 50, True),  # small
