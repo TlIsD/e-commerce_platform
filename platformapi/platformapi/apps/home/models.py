@@ -1,3 +1,5 @@
+from django.utils.safestring import mark_safe
+
 from models import BaseModel, models
 
 # Create your models here.
@@ -28,3 +30,12 @@ class Banner(BaseModel):
         db_table = 'ec_banner'
         verbose_name = '轮播图'
         verbose_name_plural = verbose_name
+
+    def image_html(self):
+        if self.image:
+            return mark_safe(f'<img src="{ self.image.url }" style="border-radius: 0%; max-height: 100px; max-width: 400px" />')
+        return ''
+
+    image_html.short_description = '广告图片'
+    image_html.allow_tags = True
+    image_html.admin_order_field = 'image'
