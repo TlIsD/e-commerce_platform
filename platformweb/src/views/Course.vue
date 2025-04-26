@@ -121,6 +121,8 @@ const get_course_list = ()=>{
     // !!表示把数据转换成布尔值
     course.has_perv = !!res.data.previous
     course.has_next = !!res.data.next
+
+    course.start_timer()  // 开启倒计时
   })
 }
 

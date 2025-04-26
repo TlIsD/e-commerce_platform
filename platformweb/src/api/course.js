@@ -36,6 +36,18 @@ const course = reactive({
             params.ordering = this.ordering;
         }
         return http.get(`/courses/${this.current_direction}/${this.current_category}/`, {params: params});
+    },
+
+    // 课程优惠时间倒计时
+    start_timer(){
+        clearTimeout(this.timer);
+        this.timer = setInterval(() => {
+            this.course_list.forEach(course => {
+                if (course.discount.expire && course.discount.expire > 0){
+                    course.discount.expire--
+                }
+            }, 1000)
+        })
     }
 })
 
