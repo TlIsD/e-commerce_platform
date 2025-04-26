@@ -53,70 +53,22 @@
           <div class="other r clearfix"><a class="course-line l" href="" target="_blank">学习路线</a></div>
         </div>
         <ul class="course-list clearfix">
-          <li class="course-card">
+          <li class="course-card" v-for="info in course.course_list">
             <a target="_blank" href="">
-              <div class="img"><img src="../assets/course-1.png" alt=""></div>
-              <p class="title ellipsis2">全面的Docker 系统性入门+进阶实践（2021最新版）</p>
+              <div class="img"><img :src="info.course_cover" alt=""></div>
+              <p class="title ellipsis2">{{ info.name }}</p>
               <p class="one">
-                <span>进阶 · 611人报名</span>
-                <span class="discount r"><i class="name">优惠价</i></span>
+                <span>{{info.get_level_display}} · {{info.students}}人报名</span>
+                <span class="discount r">
+                          <i class="name" v-if="info.discount.type">{{info.discount.type}}</i>
+                          <i class="countdown" v-if="info.discount.expire">{{parseInt(info.discount.expire/86400)}}<span class="day">天</span>{{fill0(parseInt(info.discount.expire/3600%24))}}:{{fill0(parseInt(info.discount.expire/60%60))}}:{{fill0(parseInt(info.discount.expire%60))}}</i>
+                        </span>
               </p>
               <p class="two clearfix">
-                <span class="price l red bold">￥428.00</span>
-                <span class="origin-price l delete-line">￥488.00</span>
-                <span class="add-shop-cart r"><img class="icon imv2-shopping-cart" src="../assets/cart2.svg">加购物车</span>
-              </p>
-            </a>
-          </li>
-          <li class="course-card">
-            <a target="_blank" href="">
-              <div class="img"><img src="../assets/course-2.png" alt=""></div>
-              <p class="title ellipsis2">Flink+ClickHouse 玩转企业级实时大数据开发，助你实现弯道超车</p>
-              <p class="one">
-                <span>进阶 · 246人报名</span>
-                <span class="discount r"><i class="name">限时优惠</i><i class="countdown">6<span class="day">天</span>01:39:21</i></span>
-              </p>
-              <p class="two clearfix">
-                <span class="price l red bold">￥328.00</span>
-                <span class="origin-price l delete-line">￥368.00</span>
-                <span class="add-shop-cart r"><img class="icon imv2-shopping-cart" src="../assets/cart2.svg">加购物车</span>
-              </p>
-            </a>
-          </li>
-          <li class="course-card">
-            <a target="_blank" href="">
-              <div class="img"><img src="../assets/course-3.png" alt=""></div>
-              <p class="title ellipsis2">Flink+ClickHouse 玩转企业级实时大数据开发，助你实现弯道超车</p>
-              <p class="one">
-                <span>进阶 · 246人报名</span>
-                <span class="discount r"><i class="name">限时优惠</i><i class="countdown">16<span class="day">天</span>01:39:21</i></span>
-              </p>
-              <p class="two clearfix">
-                <span class="price l red bold">￥328.00</span>
-                <span class="origin-price l delete-line">￥368.00</span>
-                <span class="add-shop-cart r"><img class="icon imv2-shopping-cart" src="../assets/cart2.svg">加购物车</span>
-              </p>
-            </a>
-          </li>
-          <li class="course-card">
-            <a target="_blank" href="">
-              <div class="img"><img src="../assets/course-4.png" alt=""></div>
-              <p class="title ellipsis2">Flink+ClickHouse 玩转企业级实时大数据开发，助你实现弯道超车</p>
-              <p class="one"><span>进阶 · 246人报名</span></p>
-              <p class="two clearfix">
-                <span class="price l red bold">￥399.00</span>
-                <span class="add-shop-cart r"><img class="icon imv2-shopping-cart" src="../assets/cart2.svg">加购物车</span>
-              </p>
-            </a>
-          </li>
-          <li class="course-card">
-            <a target="_blank" href="">
-              <div class="img"><img src="../assets/course-5.png" alt=""></div>
-              <p class="title ellipsis2">Flink+ClickHouse 玩转企业级实时大数据开发，助你实现弯道超车</p>
-              <p class="one"><span>进阶 · 246人报名</span></p>
-              <p class="two clearfix">
-                <span class="price l red bold">￥399.00</span>
-                <span class="add-shop-cart r"><img class="icon imv2-shopping-cart" src="../assets/cart2.svg">加购物车</span>
+                <span class="price l red bold" v-if="info.discount.price">￥{{parseFloat(info.discount.price).toFixed(2)}}</span>
+                <span class="price l red bold" v-else>￥{{parseFloat(info.price).toFixed(2)}}</span>
+                <span class="origin-price l delete-line" v-if="info.discount.price">￥{{parseFloat(info.price).toFixed(2)}}</span>
+                <span class="add-shop-cart r"><img class="icon imv2-shopping-cart" src="../assets/cart.svg">加购物车</span>
               </p>
             </a>
           </li>
@@ -143,26 +95,46 @@ import {reactive,ref,watch} from "vue"
 import Header from "../components/Header.vue"
 import Footer from "../components/Footer.vue"
 import course from "../api/course.js"
+import { fill0 } from "../utils/function.js";
 
 course.get_course_direction().then(res=>{
   course.direction_list = res.data;
 })
 
 const get_category = ()=>{
-  // 重置当前选中的课程分类
-  course.current_category=0;
   // 获取课程分类
   course.get_course_category().then(res=>{
-    course.category_list = res.data;
+    course.category_list = res.data
   })
 }
 get_category();
 
+const get_course_list = ()=>{
+  // 获取课程列表
+  course.get_course_list().then(res=>{
+    course.course_list = res.data
+  })
+}
+
+get_course_list()
+
 watch(
-    // 当前学习方向改变时, 更新对应的课程分类
+    // 当前学习方向改变时, 更新对应的课程分类和课程
     ()=> course.current_direction,
     ()=>{
-      get_category();
+      // 重置当前选中的课程分类
+      course.current_category=0;
+
+      get_category()
+      get_course_list()
+    }
+)
+
+watch(
+    // 当前课程分类改变时, 更新对应的课程
+    ()=> course.current_category,
+    ()=>{
+      get_course_list()
     }
 )
 
@@ -209,7 +181,8 @@ watch(
 
 .actual-header .actual-header-wrap .banner .title {
   height: 46px;
-  margin-right: 8px
+  margin-right: 8px;
+  margin-left: 16px;
 }
 
 .actual-header .actual-header-wrap .actual-header-search {
@@ -356,6 +329,7 @@ watch(
 }
 
 .type .type-wrap {
+  margin-left: 16px;
   position: relative;
   height: 109px
 }
@@ -463,7 +437,7 @@ watch(
 }
 
 .main .filter {
-  margin: 20px 0
+  margin: 24px 16px;
 }
 
 .main .filter .sort {
@@ -508,15 +482,11 @@ watch(
   width: 270px;
   height: 270px;
   float: left;
-  margin: 0 37px 20px 0;
+  margin: 0 0 20px 48px;
   box-shadow: 0 4px 8px 0 rgba(95,101,105,.05);
   border-radius: 8px;
   background-color: #fff;
   transition: transform .2s,box-shadow .2s
-}
-
-.main .course-list .course-card:nth-child(5n) {
-  margin-right: 0
 }
 
 .main .course-list .course-card:hover {
