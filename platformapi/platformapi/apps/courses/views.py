@@ -7,7 +7,7 @@ from .serializers import CourseDirectionSerializer, CourseCategorySerializer, Co
 # Create your views here.
 class CourseDirectionListAPIView(ListAPIView):
     # 学习方向
-    queryset = CourseDirection.objects.filter(is_show=True, is_deleted=False).order_by('order', '-id')
+    queryset = CourseDirection.objects.filter(is_show=True, is_deleted=False).order_by('order', 'id')
     serializer_class = CourseDirectionSerializer
     pagination_class = None
 
@@ -25,7 +25,7 @@ class CourseCategoryListAPIView(ListAPIView):
         if direction > 0:
             queryset = queryset.filter(direction=direction)
 
-        return queryset.order_by('order', '-id').all()
+        return queryset.order_by('order', 'id').all()
 
 
 class CourseListAPIView(ListAPIView):
