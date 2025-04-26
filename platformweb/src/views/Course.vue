@@ -46,9 +46,9 @@
       <div class="main-wrap">
         <div class="filter clearfix">
           <div class="sort l">
-            <a href="" class="on">最新</a>
-            <a href="">销量</a>
-            <a href="">升级</a>
+            <a href="" :class="{on:course.ordering==='-id'}" @click.prevent.stop="course.ordering=(course.ordering==='-id'?'':'-id')">最新</a>
+            <a href="" :class="{on:course.ordering==='-students'}" @click.prevent.stop="course.ordering=(course.ordering==='-students'?'':'-students')">销量</a>
+            <a href="" :class="{on:course.ordering==='-orders'}" @click.prevent.stop="course.ordering=(course.ordering==='-orders'?'':'-orders')">推荐</a>
           </div>
           <div class="other r clearfix"><a class="course-line l" href="" target="_blank">学习路线</a></div>
         </div>
@@ -122,8 +122,9 @@ watch(
     // 当前学习方向改变时, 更新对应的课程分类和课程
     ()=> course.current_direction,
     ()=>{
-      // 重置当前选中的课程分类
-      course.current_category=0;
+      // 重置排序条件和当前选中的课程分类
+      course.ordering = '-id'
+      course.current_category=0
 
       get_category()
       get_course_list()
@@ -133,6 +134,16 @@ watch(
 watch(
     // 当前课程分类改变时, 更新对应的课程
     ()=> course.current_category,
+    ()=>{
+      // 重置排序条件
+      course.ordering = '-id'
+
+      get_course_list()
+    }
+)
+
+watch(
+    ()=> course.ordering,
     ()=>{
       get_course_list()
     }
@@ -187,7 +198,8 @@ watch(
 
 .actual-header .actual-header-wrap .actual-header-search {
   position: relative;
-  width: 320px
+  width: 320px;
+  margin-right: 16px;
 }
 
 .actual-header .actual-header-wrap .actual-header-search .search-inner {
@@ -543,17 +555,6 @@ watch(
 .imv2-shopping-cart{
   width: 14px;
 }
-.main .course-list .course-card .one .add-shop-cart.add-shop-cart,
-.main .course-list .course-card .one .add-shop-cart.stared,
-.main .course-list .course-card .one .star.add-shop-cart,
-.main .course-list .course-card .one .star.stared,
-.main .course-list .course-card .two .add-shop-cart.add-shop-cart,
-.main .course-list .course-card .two .add-shop-cart.stared,
-.main .course-list .course-card .two .star.add-shop-cart,
-.main .course-list .course-card .two .star.stared {
-  color: #ff655d
-}
-
 
 .main .course-list .course-card .one .discount i,
 .main .course-list .course-card .two .discount i {
@@ -606,7 +607,7 @@ watch(
 .main .course-list .course-card .one .discount i.countdown,
 .main .course-list .course-card .two .discount i.countdown {
   display: flex;
-  font-family: DINCondensed,'微软雅黑';
+  font-family: DINCondensed,'微软雅黑',serif;
   color: #f76e6e;
   padding-top: 4px;
   padding-bottom: 2px

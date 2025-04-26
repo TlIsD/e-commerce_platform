@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework.generics import ListAPIView
 from .models import CourseDirection, CourseCategory, Course
 from .serializers import CourseDirectionSerializer, CourseCategorySerializer, CourseInfoSerializer
+from rest_framework.filters import OrderingFilter
 
 
 # Create your views here.
@@ -31,6 +32,8 @@ class CourseCategoryListAPIView(ListAPIView):
 class CourseListAPIView(ListAPIView):
     # 课程列表信息
     serializer_class = CourseInfoSerializer
+    filter_backends = [OrderingFilter, ]
+    ordering_fields = ['id', 'students', 'order']
 
     def get_queryset(self):
         # 列表页数据
