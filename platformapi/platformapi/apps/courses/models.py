@@ -17,6 +17,7 @@ class CourseDirection(BaseModel):
     def __str__(self):
         return self.name
 
+
 class CourseCategory(BaseModel):
     name = models.CharField(max_length=255, unique=True, verbose_name="分类名称")
     remark = RichTextUploadingField(default="", blank=True, null=True, verbose_name="分类描述")
@@ -30,6 +31,7 @@ class CourseCategory(BaseModel):
 
     def __str__(self):
         return self.name
+
 
 class Course(BaseModel):
     course_type = (
@@ -108,6 +110,17 @@ class Course(BaseModel):
     course_cover_large.allow_tags = True
     course_cover_large.admin_order_field = "course_cover"
 
+    @property
+    def discount(self):
+        # todo 未来通过计算获取当前课程的折扣优惠相关的信息
+        import random
+        return {
+            "type": ["限时优惠", "限时减免"].pop(random.randint(0, 1)),  # 优惠类型
+            "expire": random.randint(100000, 1200000),  # 优惠倒计时
+            "price": self.price - random.randint(1, 10) * 10,  # 优惠价格
+        }
+
+
 class Teacher(BaseModel):
     role_choices = (
         (0, '讲师'),
@@ -161,6 +174,7 @@ class Teacher(BaseModel):
     avatar_large.short_description = "头像信息(800x800)"
     avatar_large.allow_tags = True
     avatar_large.admin_order_field = "avatar"
+
 
 class CourseChapter(BaseModel):
     # 课程章节
