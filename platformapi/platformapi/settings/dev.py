@@ -294,6 +294,14 @@ RONGLIANYUN = {
     'sms_interval': 60,  # 短信发送冷却时间
 }
 
+#  阿里云OSS云存储
+OSS_ACCESS_KEY_ID = '<OssAccessKeyId>'
+OSS_ACCESS_KEY_SECRET = '<OssAccessKeySecret>'
+OSS_ENDPOINT = '<OssEndPoint>'  # 访问域名
+OSS_BUCKET_NAME = '<OssBucketName>'  # oss创建的BUCKET名称
+# 上传文件到oss服务器
+DEFAULT_FILE_STORAGE = 'django_oss_storage.backends.OssMediaStorage'
+
 
 # celery异步任务队列框架配置项
 CELERY_BROKER_URL = 'redis://:@127.0.0.1:6379/14'
