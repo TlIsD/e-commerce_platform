@@ -3,6 +3,7 @@ from rest_framework.generics import ListAPIView
 from .models import CourseDirection, CourseCategory, Course
 from .serializers import CourseDirectionSerializer, CourseCategorySerializer, CourseInfoSerializer
 from rest_framework.filters import OrderingFilter
+from .paginations import CourseListPagination
 
 
 # Create your views here.
@@ -34,6 +35,7 @@ class CourseListAPIView(ListAPIView):
     serializer_class = CourseInfoSerializer
     filter_backends = [OrderingFilter, ]
     ordering_fields = ['id', 'students', 'order']
+    pagination_class = CourseListPagination
 
     def get_queryset(self):
         # 列表页数据

@@ -75,14 +75,17 @@
 
         </ul>
         <div class="page">
-          <span class="disabled_page">首页</span>
-          <span class="disabled_page">上一页</span>
-          <a href="" class="active">1</a>
-          <a href="">2</a>
-          <a href="">3</a>
-          <a href="">4</a>
-          <a href="">下一页</a>
-          <a href="">尾页</a>
+          <a href="" v-if="course.has_perv" @click.prevent.stop="course.page=1">首页</a>
+          <span v-else>首页</span>
+          <a href="" v-if="course.has_perv" @click.prevent.stop="course.page--">上一页</a>
+          <span v-else>上一页</span>
+          <a href="" v-if="course.has_perv" @click.prevent.stop="course.page--">{{course.page-1}}</a>
+          <a class="active">{{course.page}}</a>
+          <a href="" v-if="course.has_next" @click.prevent.stop="course.page++">{{course.page+1}}</a>
+          <a href="" v-if="course.has_next" @click.prevent.stop="course.page++">下一页</a>
+          <span v-else>下一页</span>
+          <a href="" v-if="course.has_next" @click.prevent.stop="course.page=Math.ceil(course.count/course.size)">尾页</a>
+          <span v-else>尾页</span>
         </div>
       </div>
     </div>
@@ -112,7 +115,12 @@ get_category();
 const get_course_list = ()=>{
   // 获取课程列表
   course.get_course_list().then(res=>{
-    course.course_list = res.data
+    course.course_list = res.data.results
+
+    course.count = res.data.count
+    // !!表示把数据转换成布尔值
+    course.has_perv = !!res.data.previous
+    course.has_next = !!res.data.next
   })
 }
 
@@ -144,6 +152,13 @@ watch(
 
 watch(
     ()=> course.ordering,
+    ()=>{
+      get_course_list()
+    }
+)
+
+watch(
+    ()=> course.page,
     ()=>{
       get_course_list()
     }
