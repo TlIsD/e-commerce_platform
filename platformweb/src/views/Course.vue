@@ -139,20 +139,32 @@
 </template>
 
 <script setup>
-import {reactive,ref} from "vue"
+import {reactive,ref,watch} from "vue"
 import Header from "../components/Header.vue"
 import Footer from "../components/Footer.vue"
 import course from "../api/course.js"
 
-// 获取学习方向的列表数据
 course.get_course_direction().then(res=>{
-  course.direction_list = res.data
+  course.direction_list = res.data;
 })
 
-// 获取课程分类的列表数据
-course.get_course_category().then(res=>{
-  course.category_list = res.data
-})
+const get_category = ()=>{
+  // 重置当前选中的课程分类
+  course.current_category=0;
+  // 获取课程分类
+  course.get_course_category().then(res=>{
+    course.category_list = res.data;
+  })
+}
+get_category();
+
+watch(
+    // 当前学习方向改变时, 更新对应的课程分类
+    ()=> course.current_direction,
+    ()=>{
+      get_category();
+    }
+)
 
 </script>
 
