@@ -46,8 +46,8 @@ const course = reactive({
                 if (course.discount.expire && course.discount.expire > 0){
                     course.discount.expire--
                 }
-            }, 1000)
-        })
+            })
+        }, 1000)
     }
 })
 
