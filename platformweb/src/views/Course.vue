@@ -6,12 +6,12 @@
         <div class="actual-header-wrap">
           <div class="banner">
             <router-link class="title" to="/course"><img class="h100" src="../assets/coding-title.png" alt=""></router-link>
-            <div>真实项目实战演练</div>
+            <div>项目实战演练</div>
           </div>
           <div class="actual-header-search">
             <div class="search-inner">
-              <input class="actual-search-input" placeholder="搜索感兴趣的实战课程内容" type="text" autocomplete="off">
-              <img class="actual-search-button" src="../assets/search.svg" />
+              <input class="actual-search-input" v-model="course.text" placeholder="搜索感兴趣的课程内容" type="text" autocomplete="off">
+              <img class="actual-search-button" src="../assets/search.svg" @click.prevent.stop="get_course_list" />
             </div>
             <div class="actual-searchtags">
             </div>
@@ -114,7 +114,15 @@ get_category();
 
 const get_course_list = ()=>{
   // 获取课程列表
-  course.get_course_list().then(res=>{
+  let ret = null
+  if(course.text){
+    ret = course.search_course()
+  }else {
+    ret = course.get_course_list()
+  }
+
+  // 获取课程列表
+  ret.then(res=>{
     course.course_list = res.data.results
 
     course.count = res.data.count
