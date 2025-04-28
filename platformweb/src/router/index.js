@@ -49,6 +49,15 @@ const routes = [
         name: 'Course',
         component: () => import('../views/Course.vue'),
     },
+    {
+        meta:{
+            title: '课程详情',
+            keepAlive: true,
+        },
+        path: '/project/:id',
+        name: 'Info',
+        component: () => import('../views/Info.vue'),
+    }
 ]
 
 // 实例化
