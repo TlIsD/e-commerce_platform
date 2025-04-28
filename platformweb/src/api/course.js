@@ -17,6 +17,7 @@ const course = reactive({
     timer: null,  // 定时器
 
     text: "",  // 搜索框内容
+    hot_word_list: [],  // 热词列表
 
     // 获取学习方向信息
     get_course_direction(){
@@ -63,6 +64,11 @@ const course = reactive({
             params['ordering'] = this.ordering
         }
         return http.get(`/courses/search/`, {params})
+    },
+
+    // 课程热搜关键词
+    get_hot_word(){
+        return http.get('/courses/hotword/')
     }
 })
 

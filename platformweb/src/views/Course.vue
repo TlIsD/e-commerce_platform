@@ -17,8 +17,7 @@
             </div>
             <div class="search-hot">
               <span>热搜：</span>
-              <a href="">Java工程师</a>
-              <a href="">Vue</a>
+              <a href="" @click.stop.prevent="search_by_hot_word(hot_word)" v-for="hot_word in course.hot_word_list">{{ hot_word }}</a>
             </div>
           </div>
         </div>
@@ -100,6 +99,13 @@ import Footer from "../components/Footer.vue"
 import course from "../api/course.js"
 import { fill0 } from "../utils/function.js";
 
+const get_hot_word = ()=>{
+  // 获取热搜关键字列表
+  course.get_hot_word().then(res=>{
+    course.hot_word_list = res.data
+  })
+}
+
 course.get_course_direction().then(res=>{
   course.direction_list = res.data;
 })
@@ -132,9 +138,17 @@ const get_course_list = ()=>{
 
     course.start_timer()  // 开启倒计时
   })
+  // 获取热词列表
+  get_hot_word()
 }
 
 get_course_list()
+
+// 点击热词时进行搜索
+const search_by_hot_word = (hot_word)=>{
+  course.text = hot_word
+  get_course_list()
+}
 
 watch(
     // 当前学习方向改变时, 更新对应的课程分类和课程
