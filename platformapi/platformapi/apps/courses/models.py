@@ -1,3 +1,5 @@
+import json
+
 from stdimage import StdImageField
 from django.utils.safestring import mark_safe
 from platformapi.utils.models import models, BaseModel
@@ -117,9 +119,11 @@ class Course(BaseModel):
         return {
             "type": ["限时优惠", "限时减免"].pop(random.randint(0, 1)),  # 优惠类型
             "expire": random.randint(100000, 1200000),  # 优惠倒计时
-            "price": self.price - random.randint(1, 10) * 10,  # 优惠价格
+            "price": float(self.price - random.randint(1, 10) * 10),  # 优惠价格
         }
 
+    def discount_json(self):
+        return json.dumps(self.discount)
 
 class Teacher(BaseModel):
     role_choices = (

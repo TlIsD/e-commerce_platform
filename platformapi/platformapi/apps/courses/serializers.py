@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import CourseDirection, CourseCategory, Course
-
+from .search_indexes import CourseIndex
+from drf_haystack.serializers import HaystackSerializer
 
 class CourseDirectionSerializer(serializers.ModelSerializer):
     # 学习方向序列化器
@@ -19,3 +20,10 @@ class CourseInfoSerializer(serializers.ModelSerializer):
         model = Course
         fields = ['id', 'name', 'course_cover', 'level', 'get_level_display', 'students', 'status', 'get_status_display',
                   'lessons', 'pub_lessons', 'price', 'discount']
+
+class CourseIndexHaystackSerializer(HaystackSerializer):
+    # 课程搜索序列化器
+    class Meta:
+        index_classes = [CourseIndex]
+        fields = ['text', 'id', 'name', 'course_cover', 'get_level_display', 'students', 'get_status_display', 'pub_lessons', 'price', 'discount', 'order']
+

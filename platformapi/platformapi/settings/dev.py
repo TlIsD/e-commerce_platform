@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'ckeditor',  # 富文本编辑
     'ckeditor_uploader',  # 上传文件子应用
     'stdimage',  # 生成缩略图
+    'haystack',  # 搜索引擎框架
 
     'home',
     'users',
@@ -74,7 +75,7 @@ ROOT_URLCONF = 'platformapi.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [ BASE_DIR / "templates" ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -244,6 +245,20 @@ CACHES = {
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "session"
 
+# haystack连接elasticsearch的配置信息
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        # haystack操作es的核心模块
+        'ENGINE': 'haystack.backends.elasticsearch7_backend.Elasticsearch7SearchEngine',
+        # es服务器地址
+        'URL': 'http://127.0.0.1:9200/',
+        # es索引仓库
+        'INDEX_NAME': 'haystack',
+    }
+}
+
+# mysqlORM操作数据库改变时自动更新es索引
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
 REST_FRAMEWORK = {
     # 自定义异常处理
