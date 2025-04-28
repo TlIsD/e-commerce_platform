@@ -1,9 +1,10 @@
 from django_redis import get_redis_connection
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from datetime import datetime, timedelta
 import constants
 from .models import CourseDirection, CourseCategory, Course
-from .serializers import CourseDirectionSerializer, CourseCategorySerializer, CourseInfoSerializer, CourseIndexHaystackSerializer
+from .serializers import CourseDirectionSerializer, CourseCategorySerializer, CourseInfoSerializer, \
+    CourseIndexHaystackSerializer, CourseRetrieveModelSerializer
 from rest_framework.filters import OrderingFilter
 from .paginations import CourseListPagination
 from drf_haystack.viewsets import HaystackViewSet
@@ -110,3 +111,8 @@ class HotWordAAPIView(APIView):
 
         return Response(word_list)
 
+
+class CourseRetrieveAPIView(RetrieveAPIView):
+    # 课程详情信息
+    queryset = Course.objects.filter(is_show=True, is_deleted=False).all()
+    serializer_class = CourseRetrieveModelSerializer
