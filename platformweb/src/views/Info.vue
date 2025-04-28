@@ -5,6 +5,15 @@
       <div class="course-info">
         <div class="wrap-left">
           <!-- 课程封面或封面商品 -->
+          <AliPlayerV3
+              ref="player"
+              class="h-64 md:h-96 w-full rounded-lg"
+              style="height: 100%; width: 100%;"
+              :options="options"
+              @play="onPlay($event)"
+              @pause="onPause($event)"
+              @playing="onPlaying($event)"
+          />
         </div>
         <div class="wrap-right">
           <h3 class="course-name">Linux系统基础5周入门精讲</h3>
@@ -107,10 +116,34 @@
 <script setup>
 import {reactive,ref,watch} from "vue"
 import {useRoute} from "vue-router"
-import Header from "../components/Header.vue"
-import Footer from "../components/Footer.vue"
+import Header from '../components/Header.vue'
+import Footer from '../components/Footer.vue'
+import { AliPlayerV3 } from 'vue-aliplayer-v3'
 
 let route = useRoute()
+
+let player = ref(null)
+
+// ali player播放器参数
+const options = reactive({
+  source: '/src/assets/video.mp4',
+  cover: '/src/assets/course-1.png',
+  autoplay: false,
+  preload: true,
+  isLive: false,
+})
+
+const onPlay = (event)=>{
+  console.log("播放视频::", player.value.getCurrentTime())
+}
+
+const onPause = (event)=>{
+  console.log("暂停播放::", player.value.getCurrentTime())
+}
+
+const onPlaying = (event)=>{
+  console.log("播放中::", player.value.getCurrentTime())
+}
 
 const state = reactive({
   course_id: route.params.id,
