@@ -231,13 +231,21 @@ CACHES = {
             "CONNECTION_POOL_KWARGS": {"max_connections": 10},
         }
     },
-    # 提供存储短信验证码
+    # 存储短信验证码
     "sms_code":{
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": "redis://:@127.0.0.1:6379/2",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "CONNECTION_POOL_KWARGS": {"max_connections": 10},
+        }
+    },
+    # 存储搜索关键词
+    "hot_word":{
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://:@127.0.0.1:6379/3",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     }
 }

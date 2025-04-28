@@ -12,5 +12,12 @@ BANNER_SIZE = 10
 # 缓存周期
 LIST_CACHE_PAGE_TIME = 60
 
-# 默认头绪
+# 默认头像
 DEFAULT_AVATAR = 'default.jpg'
+
+# 热门搜索关键字在redis中key前缀名称
+DEFAULT_HOT_WORD = 'hot_word'
+# 返回的热门搜索关键字的数量
+HOT_WORD_LENGTH = 5
+# 热门搜索关键字的有效时间(天)
+HOT_WORD_EXPIRE = 7
