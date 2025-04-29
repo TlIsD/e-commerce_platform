@@ -19,6 +19,15 @@ const course = reactive({
     text: "",  // 搜索框内容
     hot_word_list: [],  // 热词列表
 
+    course_id: null,  // 课程id
+    info:{
+      teacher: {},  // 课程相关教师信息
+      discount: {  // 课程相关折扣信息
+          type: ''
+      },
+    },
+    tabIndex: 1,  // 课程详情页默认展示的选项卡
+
     // 获取学习方向信息
     get_course_direction(){
         return http.get('/courses/directions/')
@@ -69,6 +78,11 @@ const course = reactive({
     // 课程热搜关键词
     get_hot_word(){
         return http.get('/courses/hotword/')
+    },
+
+    // 课程详情信息
+    get_course(){
+        return http.get(`/courses/${this.course_id}`)
     }
 })
 
