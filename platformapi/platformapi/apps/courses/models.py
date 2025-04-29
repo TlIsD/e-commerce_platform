@@ -125,6 +125,13 @@ class Course(BaseModel):
     def discount_json(self):
         return json.dumps(self.discount)
 
+    @property
+    def can_free_study(self):
+        # 是否允许试学
+        lesson_list = self.lesson_list.filter(is_deleted=False, is_show=True).order_by("order").all()
+        return len(lesson_list) > 0
+
+
 class Teacher(BaseModel):
     role_choices = (
         (0, '讲师'),

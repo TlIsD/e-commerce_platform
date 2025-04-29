@@ -27,6 +27,7 @@ const course = reactive({
       },
     },
     tabIndex: 1,  // 课程详情页默认展示的选项卡
+    chapter_list: [], // 课程章节列表
 
     // 获取学习方向信息
     get_course_direction(){
@@ -83,6 +84,11 @@ const course = reactive({
     // 课程详情信息
     get_course(){
         return http.get(`/courses/${this.course_id}`)
+    },
+
+    // 获取指定课程的章节列表
+    get_course_chapters(){
+        return http.get(`/courses/${this.course_id}/chapters`)
     }
 })
 
