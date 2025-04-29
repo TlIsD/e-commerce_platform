@@ -2,9 +2,9 @@ from django_redis import get_redis_connection
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from datetime import datetime, timedelta
 import constants
-from .models import CourseDirection, CourseCategory, Course
+from .models import CourseDirection, CourseCategory, Course, CourseChapter
 from .serializers import CourseDirectionSerializer, CourseCategorySerializer, CourseInfoSerializer, \
-    CourseIndexHaystackSerializer, CourseRetrieveModelSerializer
+    CourseIndexHaystackSerializer, CourseRetrieveModelSerializer, CourseChapterSerializer
 from rest_framework.filters import OrderingFilter
 from .paginations import CourseListPagination
 from drf_haystack.viewsets import HaystackViewSet
@@ -116,3 +116,17 @@ class CourseRetrieveAPIView(RetrieveAPIView):
     # 课程详情信息
     queryset = Course.objects.filter(is_show=True, is_deleted=False).all()
     serializer_class = CourseRetrieveModelSerializer
+
+
+class CourseChapterListAPIView(ListAPIView):
+    # 课程章节列表
+    serializer_class = CourseChapterSerializer
+    def get_queryset(self):
+        # 列表页数据
+        course = int(self.kwargs.get("course", 0))
+        try:
+            ret = Course.objects.filter(pk=course).all()
+        except:
+            return []
+        queryset = CourseChapter.objects.filter(course=course,is_show=True, is_deleted=False).order_by("order", "id")
+        return queryset.all()
