@@ -64,10 +64,10 @@
                         </span>
               </p>
               <p class="two clearfix">
-                <span class="price l red bold" v-if="info.discount.price">￥{{parseFloat(info.discount.price).toFixed(2)}}</span>
+                <span class="price l red bold" v-if="info.discount.price>=0">￥{{parseFloat(info.discount.price).toFixed(2)}}</span>
                 <span class="price l red bold" v-else>￥{{parseFloat(info.price).toFixed(2)}}</span>
-                <span class="origin-price l delete-line" v-if="info.discount.price">￥{{parseFloat(info.price).toFixed(2)}}</span>
-                <span class="add-shop-cart r"><img class="icon imv2-shopping-cart" src="../assets/cart.svg">加购物车</span>
+                <span class="origin-price l delete-line" v-if="info.discount.price>=0">￥{{parseFloat(info.price).toFixed(2)}}</span>
+                <span class="add-shop-cart r"><img class="icon imv2-shopping-cart" src="../assets/cart2.svg">加入购物车</span>
               </p>
             </router-link>
           </li>

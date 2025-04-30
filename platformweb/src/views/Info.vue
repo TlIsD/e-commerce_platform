@@ -29,7 +29,7 @@
           <div class="sale-time" v-if="!course.info.discount.type">
             <p class="sale-type">课程价格 ¥{{parseFloat(course.info.price).toFixed(2)}}</p>
           </div>
-          <p class="course-price" v-if="course.info.discount.price">
+          <p class="course-price" v-if="course.info.discount.price >= 0">
             <span>活动价</span>
             <span class="discount">¥{{parseFloat(course.info.discount.price).toFixed(2)}}</span>
             <span class="original">¥{{parseFloat(course.info.price).toFixed(2)}}</span>
@@ -169,7 +169,6 @@ if(course.course_id > 0){
   // 获取课程章节信息
   course.get_course_chapters().then(res => {
     course.chapter_list = res.data
-    console.log(course)
   })
 
 }else{
