@@ -9,7 +9,8 @@ export default createStore({
         return {
             user:{
 
-            }
+            },
+            cart_total: 0,  // 购物车商品数量, 默认为0
         }
     },
 
@@ -35,8 +36,13 @@ export default createStore({
         },
         logout(state){
             state.user = {}
+            state.cart_total = 0
             localStorage.token = null
             sessionStorage.token = null
+        },
+        cart_total(state, total){
+            // 设置购物车商品总数
+            state.cart_total = total
         }
     }
 })

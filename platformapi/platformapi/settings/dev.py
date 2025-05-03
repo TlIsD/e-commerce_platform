@@ -297,6 +297,8 @@ JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),
     # 自定义载荷
     'JWT_PAYLOAD_HANDLER': 'platformapi.utils.authenticate.jwt_payload_handler',
+    # 自定义响应数据
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'platformapi.utils.authenticate.jwt_response_payload_handler',
 }
 
 # 自定义系统认证采用的用户模型类

@@ -193,12 +193,13 @@ if(course.course_id > 0){
 let add_cart = ()=>{
   let token = sessionStorage.token || localStorage.token
   // 详情页中添加商品到购物车，不用传递参数，直接使用state.course来获取课程信息
-  cart.add_course_to_cart(course.course_id, token).then(response=>{
-    ElMessage.success(response.data.msg)
+  cart.add_course_to_cart(course.course_id, token).then(res=>{
+    store.commit('cart_total', res.data.cart_total)
+    ElMessage.success(res.data.msg)
   }).catch(error=>{
     if(error.response.status === 401){
-      store.commit("logout");
-      ElMessage.error("您尚未登录或已登录超时，请登录后继续操作！");
+      store.commit("logout")
+      ElMessage.error("您尚未登录或已登录超时，请登录后继续操作！")
     }
     ElMessage.error("添加商品到购物车失败！")
   })

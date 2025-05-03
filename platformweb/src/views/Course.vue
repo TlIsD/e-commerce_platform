@@ -159,8 +159,9 @@ const search_by_hot_word = (hot_word)=>{
 const add_cart = (course_info)=>{
   // 从本地存储中获取jwt token
   let token = sessionStorage.token || localStorage.token;
-  cart.add_course_to_cart(course_info.id, token).then(response=>{
-    ElMessage.success(response.data.msg)
+  cart.add_course_to_cart(course_info.id, token).then(res=>{
+    store.commit('cart_total', res.data.cart_total)
+    ElMessage.success(res.data.msg)
   }).catch(error=>{
     if(error.response.status === 401){
       store.commit("logout");

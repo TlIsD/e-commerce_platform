@@ -1,12 +1,12 @@
 from django.contrib.auth.management.commands.changepassword import UserModel
 from django.db.models import Q
+from django_redis import get_redis_connection
 from rest_framework_jwt.utils import jwt_payload_handler as payload_handler
 from django.contrib.auth.backends import ModelBackend, UserModel
 from rest_framework_jwt.settings import api_settings
 
 def jwt_payload_handler(user):
     # 自定义载荷信息
-
     # 先生成原有的载荷信息
     payload = payload_handler(user)
 
@@ -22,6 +22,16 @@ def jwt_payload_handler(user):
         payload['credit'] = user.credit
 
     return payload
+
+def jwt_response_payload_handler(token, user, request):
+    # 增加返回购物车的商品数量
+    redis = get_redis_connection("cart")
+    cart_total = redis.hlen(f"cart_{user.id}")
+
+    return {
+        "cart_total": cart_total,
+        "token": token
+    }
 
 def get_user_by_account(account):
     # 根据用户名或手机号或邮箱获取user
