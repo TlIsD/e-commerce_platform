@@ -67,7 +67,7 @@
                 <span class="price l red bold" v-if="info.discount.price>=0">￥{{parseFloat(info.discount.price).toFixed(2)}}</span>
                 <span class="price l red bold" v-else>￥{{parseFloat(info.price).toFixed(2)}}</span>
                 <span class="origin-price l delete-line" v-if="info.discount.price>=0">￥{{parseFloat(info.price).toFixed(2)}}</span>
-                <span class="add-shop-cart r"><img class="icon imv2-shopping-cart" src="../assets/cart2.svg">加入购物车</span>
+                <span class="add-shop-cart r" @click.prevent.stop="add_cart(info)"><img class="icon imv2-shopping-cart" src="../assets/cart2.svg">加入购物车</span>
               </p>
             </router-link>
           </li>
@@ -97,7 +97,12 @@ import {reactive,ref,watch} from "vue"
 import Header from "../components/Header.vue"
 import Footer from "../components/Footer.vue"
 import course from "../api/course.js"
+import cart from "../api/cart.js"
 import { fill0 } from "../utils/function.js";
+import {ElMessage} from "element-plus";
+import {useStore} from "vuex";
+
+let store = useStore();
 
 const get_hot_word = ()=>{
   // 获取热搜关键字列表
@@ -148,6 +153,22 @@ get_course_list()
 const search_by_hot_word = (hot_word)=>{
   course.text = hot_word
   get_course_list()
+}
+
+// 添加课程到购物车
+const add_cart = (course_info)=>{
+  // 从本地存储中获取jwt token
+  let token = sessionStorage.token || localStorage.token;
+  cart.add_course_to_cart(course_info.id, token).then(response=>{
+    ElMessage.success(response.data.msg)
+  }).catch(error=>{
+    if(error.response.status === 401){
+      store.commit("logout");
+      ElMessage.error("您尚未登录或已登录超时，请登录后继续操作！");
+    }else{
+      ElMessage.error("添加商品到购物车失败！");
+    }
+  })
 }
 
 watch(

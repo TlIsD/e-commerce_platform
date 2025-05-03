@@ -39,7 +39,11 @@
               <button class="buy-now">立即购买</button>
               <button class="free">免费试学</button>
             </div>
-            <div class="add-cart"><img src="../assets/cart-yellow.svg" alt="">加入购物车</div>
+            <el-popconfirm title="是否添加当前课程到购物车" @confirm="add_cart" confirmButtonText="确认" cancelButtonText="取消">
+              <template #reference>
+                <div class="add-cart"><img src="../assets/cart-yellow.svg" alt="">加入购物车</div>
+              </template>
+            </el-popconfirm>
           </div>
         </div>
       </div>
@@ -114,10 +118,14 @@ import {reactive,ref,watch} from "vue"
 import { useRoute, useRouter } from "vue-router"
 import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
-import { AliPlayerV3 } from 'vue-aliplayer-v3'
 import course from "../api/course.js";
+import cart from "../api/cart.js";
+import { AliPlayerV3 } from 'vue-aliplayer-v3'
 import { ElMessage } from "element-plus";
 import {fill0} from "../utils/function.js";
+import {useStore} from "vuex";
+
+let store = useStore();
 
 let route = useRoute()
 let router = useRouter()
@@ -178,6 +186,21 @@ if(course.course_id > 0){
     onClose(){
       router.go(-1)
     }
+  })
+}
+
+// 添加商品到购物车
+let add_cart = ()=>{
+  let token = sessionStorage.token || localStorage.token
+  // 详情页中添加商品到购物车，不用传递参数，直接使用state.course来获取课程信息
+  cart.add_course_to_cart(course.course_id, token).then(response=>{
+    ElMessage.success(response.data.msg)
+  }).catch(error=>{
+    if(error.response.status === 401){
+      store.commit("logout");
+      ElMessage.error("您尚未登录或已登录超时，请登录后继续操作！");
+    }
+    ElMessage.error("添加商品到购物车失败！")
   })
 }
 
