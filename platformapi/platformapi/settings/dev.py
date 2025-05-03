@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'home',
     'users',
     'courses',
+    'cart',
 ]
 
 MIDDLEWARE = [
@@ -248,7 +249,15 @@ CACHES = {
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
-    }
+    },
+    # 提供存储购物车课程商品
+    "cart": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://:@127.0.0.1:6379/4",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
 }
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"

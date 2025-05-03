@@ -24,7 +24,7 @@ def custom_exception_handler(exc, context):
 
         elif isinstance(exc, RedisError):
             logger.error('Redis异常！[%s] %s' % (view, exc))
-            response = Response({'message': '服务器内部错误'}, status=status.HTTP_507_INSUFFICIENT_STORAGE)
+            response = Response({'message': '缓存服务器内部错误'}, status=status.HTTP_507_INSUFFICIENT_STORAGE)
 
         elif isinstance(exc, ZeroDivisionError):
             response = Response({'message': '0不能作为除数！'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
