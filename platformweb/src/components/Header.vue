@@ -44,12 +44,13 @@
               </div>
             </div>
 
-            <div class="login-bar logined-bar" v-show="store.state.user.user_id">
+            <div class="login-bar logined-bar" v-if="store.state.user.user_id">
               <div class="shop-cart ">
                 <img src="../assets/cart.svg" alt="" />
                 <el-badge type="danger" :value="store.state.cart_total" class="item">
                   <span><router-link to="/cart">购物车</router-link></span>
                 </el-badge>
+              </div>
               <div class="login-box ">
                 <span>
                   <router-link to="">我的课堂</router-link>
