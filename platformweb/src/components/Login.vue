@@ -122,6 +122,7 @@ const login_handler = (res) => {
 
     // 后续处理
     if(!user.remember){
+      sessionStorage.token = res.data.token
       user.account = ''
       user.rem_account = ''
       user.password = ''
@@ -134,6 +135,7 @@ const login_handler = (res) => {
       localStorage.removeItem('rem_password')
     }else {
       // 记住密码
+      localStorage.token = res.data.token
       localStorage.setItem('remember', true)
       localStorage.setItem('rem_account', user.account)
       localStorage.setItem('rem_password', user.password)
