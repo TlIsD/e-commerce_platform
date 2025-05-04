@@ -7,7 +7,7 @@
           <div class="cart-title left">
             <h1 class="left">我的购物车</h1>
             <div class="left">
-              共<span>5</span>门，已选择<span>5</span>门
+              共<span>{{cart.course_list.length}}</span>门，已选择<span>{{cart.selected_course_total}}</span>门
             </div>
           </div>
           <div class="right">
@@ -21,7 +21,7 @@
         <div class="cart-body-title">
           <el-row class="full">
             <el-col :span="3">
-              <div class="item-1 l"><el-checkbox v-model="state.checked">全选</el-checkbox></div>
+              <div class="item-1 l"><el-checkbox v-model="cart.checked">全选</el-checkbox></div>
             </el-col>
             <el-col :span="11">
               <div class="item-2 l"><span class="course">课程</span></div>
@@ -35,29 +35,32 @@
           </el-row>
         </div>
         <div class="cart-body-table">
-          <div class="item">
+          <div class="item" v-for="course_info in cart.course_list">
             <el-row class="full">
               <el-col :span="3">
                 <div class="item-1">
-                  <el-checkbox v-model="state.checked"></el-checkbox>
+                  <el-checkbox v-model="course_info.selected"></el-checkbox>
                 </div>
               </el-col>
               <el-col :span="11">
                 <div class="item-2">
-                  <a href="" class="img-box l">
-                    <img src="#">
-                  </a>
+                  <router-link class="img-box l" :to="`/project/${course_info.id}`">
+                    <img :src="course_info.course_cover">
+                  </router-link>
                   <dl class="l has-package">
-                    <dt>移动端UI设置入门与实战</dt>
-                    <p class="package-item">优惠价</p>
+                    <dt>【{{ course_info.course_type }}】{{ course_info.name }}</dt>
+                    <p class="package-item" v-if="course_info.discount.type">{{ course_info.discount.type }}</p>
                   </dl>
                 </div>
               </el-col>
               <el-col :span="9">
                 <div class="item-3 col">
-                  <div class="price">
-                    <span class="discount-price"><em>￥</em><span>588.00</span></span><br>
-                    <span class="original-price"><em>￥</em><span>1988.00</span></span>
+                  <div class="price" v-if="course_info.discount.price>=0">
+                    <span class="discount-price"><em>￥</em><span>{{course_info.discount.price.toFixed(2)}}</span></span><br>
+                    <span class="original-price"><em>￥</em><span>{{course_info.price.toFixed(2)}}</span></span>
+                  </div>
+                  <div class="price" v-else>
+                    <div class="discount-price"><em>￥</em><span>{{course_info.price.toFixed(2)}}</span></div>
                   </div>
                 </div>
               </el-col>
@@ -67,30 +70,6 @@
             </el-row>
           </div>
 
-          <div class="item">
-            <el-row class="full">
-              <el-col :span="3">
-                <div class="item-1"><el-checkbox v-model="state.checked"></el-checkbox></div>
-              </el-col>
-              <el-col :span="11">
-                <div class="item-2">
-                  <a href="" class="img-box l"><img src="/src/assets/course-1.png"></a>
-                  <dl class="l has-package">
-                    <dt>【实战课】算法与数据结构</dt>
-                    <p class="package-item">限时优惠</p>
-                  </dl>
-                </div>
-              </el-col>
-              <el-col :span="9">
-                <div class="item-3 col">
-                  <div class="price"><em>￥</em><span>299.00</span></div>
-                </div>
-              </el-col>
-              <el-col :span="1">
-                <div class="item-4"><el-icon :size="26" class="close"><Close /></el-icon></div>
-              </el-col>
-            </el-row>
-          </div>
           <div class="cart-body-bot fixed">
             <div class=" cart-body-bot-box">
               <div class="right">
@@ -100,11 +79,11 @@
                       <span class="topdiv w70">总计金额：</span>
                       <span class="price price-red w100">
                         <em>￥</em>
-                        <span>1751.00</span>
+                        <span>{{cart.total_price.toFixed(2)}}</span>
                       </span>
                     </div>
                   </div>
-                  <div class="li-3"><span class="btn">去结算</span></div>
+                  <div class="li-3"><span class="btn">结算</span></div>
                 </div>
               </div>
             </div>
@@ -121,11 +100,41 @@ import {Close} from '@element-plus/icons-vue'
 import {reactive} from "vue"
 import Header from "../components/Header.vue"
 import Footer from "../components/Footer.vue"
-import {} from "../api/cart"
+import cart from '../api/cart.js'
 import { ElMessage } from 'element-plus'
-let state = reactive({
-  checked: false,
-})
+
+// 获取购物车中的商品列表
+const get_cart = () => {
+  let token = sessionStorage.token || localStorage.token
+  cart.get_course_from_cart(token).then(res=>{
+    cart.course_list = res.data.cart
+
+    get_cart_total()
+  })
+}
+
+get_cart()
+
+// 获取商品总价
+const get_cart_total = () => {
+  let sum = 0
+  let select_sum = 0
+  cart.course_list.forEach((course, key)=>{
+    if(course.selected){
+      // 是否被勾选
+      select_sum ++
+      // 是否有优惠
+      if(course.discount.price >= 0){
+        sum += course.discount.price
+      }else{
+        sum += course.price
+      }
+    }
+    cart.total_price = sum
+    cart.selected_course_total = select_sum
+  })
+}
+
 </script>
 
 <style scoped>
