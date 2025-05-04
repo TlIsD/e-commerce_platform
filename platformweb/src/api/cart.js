@@ -21,15 +21,14 @@ const cart = reactive({
 
     // 获取购物车的商品列表
     get_course_from_cart(token){
-        // 获取购物车的商品课程列表
         return http.get("/cart/", {
             headers:{
                 Authorization: `jwt ${token}`,
             }
         })
     },
+    // 切换指定商品课程的勾选状态
     select_course(course_id, selected, token){
-        // 切换指定商品课程的勾选状态
         return http.patch("/cart/", {
             course_id,
             selected,
@@ -39,13 +38,24 @@ const cart = reactive({
             }
         })
     },
+    // 切换购物车全选/全不选状态
     select_all_course(selected, token){
-        // 切换购物车全选/全不选状态
         return http.put("/cart/", {
             selected,
         },{
             headers:{
                 Authorization: `jwt ${token}`,
+            }
+        })
+    },
+    // 从购物车中删除商品课程
+    delete_course(course_id, token){
+        return http.delete("/cart/", {
+            params:{
+                course_id,
+            },
+            headers:{
+                Authorization: "jwt " + token,
             }
         })
     }

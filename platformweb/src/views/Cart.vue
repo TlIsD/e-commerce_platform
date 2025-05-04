@@ -35,7 +35,7 @@
           </el-row>
         </div>
         <div class="cart-body-table">
-          <div class="item" v-for="course_info in cart.course_list">
+          <div class="item" v-for="course_info, key in cart.course_list">
             <el-row class="full">
               <el-col :span="3">
                 <div class="item-1">
@@ -65,7 +65,13 @@
                 </div>
               </el-col>
               <el-col :span="1">
-                <div class="item-4"><el-icon :size="26" class="close"><Close /></el-icon></div>
+                <div class="item-4">
+                  <el-popconfirm title="您确认要从购物车删除当前课程吗？" @confirm="del_cart(key)" confirmButtonText="删除！" cancelButtonText="手滑了！">
+                    <template #reference>
+                      <el-icon :size="26" class="close"><Close /></el-icon>
+                    </template>
+                  </el-popconfirm>
+                </div>
               </el-col>
             </el-row>
           </div>
@@ -102,6 +108,9 @@ import Header from "../components/Header.vue"
 import Footer from "../components/Footer.vue"
 import cart from '../api/cart.js'
 import { ElMessage } from 'element-plus'
+import {useStore} from "vuex"
+
+const store = useStore()
 
 // 获取购物车中的商品列表
 const get_cart = () => {
@@ -156,7 +165,6 @@ const change_select_course = (course)=>{
   })
 }
 
-
 // 监听全选按钮的状态切换
 watch(
     ()=>cart.checked,
@@ -184,6 +192,21 @@ watch(
       }
     }
 )
+
+const del_cart = (key)=>{
+  // 从购物车中删除商品课程
+  let token = sessionStorage.token || localStorage.token;
+  let course = cart.course_list[key];
+  console.log("course", course)
+  cart.delete_course(course.id, token).then(res=>{
+    // 当课程的勾选状态为True时，删除课程以后，把已勾选状态的课程总数-1
+    cart.course_list.splice(key, 1);
+    // 在store中页要同步购物车商品总数量
+    store.commit("cart_total", cart.course_list.length);
+    // 重新计算购物车中的商品课程的总价格
+    get_cart_total();
+  })
+}
 
 </script>
 
