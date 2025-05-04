@@ -5,6 +5,7 @@ const cart = reactive({
     course_list: [],  // 购物车中商品列表
     total_price: 0,  // 选中商品总价
     selected_course_total: 0,  // 选中商品数量
+    checked: false,  // 是否全选
 
     // 添加课程到购物车
     add_course_to_cart(course_id, token) {
@@ -22,6 +23,27 @@ const cart = reactive({
     get_course_from_cart(token){
         // 获取购物车的商品课程列表
         return http.get("/cart/", {
+            headers:{
+                Authorization: `jwt ${token}`,
+            }
+        })
+    },
+    select_course(course_id, selected, token){
+        // 切换指定商品课程的勾选状态
+        return http.patch("/cart/", {
+            course_id,
+            selected,
+        },{
+            headers:{
+                Authorization: `jwt ${token}`,
+            }
+        })
+    },
+    select_all_course(selected, token){
+        // 切换购物车全选/全不选状态
+        return http.put("/cart/", {
+            selected,
+        },{
             headers:{
                 Authorization: `jwt ${token}`,
             }

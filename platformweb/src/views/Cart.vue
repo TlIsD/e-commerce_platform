@@ -39,7 +39,7 @@
             <el-row class="full">
               <el-col :span="3">
                 <div class="item-1">
-                  <el-checkbox v-model="course_info.selected"></el-checkbox>
+                  <el-checkbox v-model="course_info.selected" @change="change_select_course(course_info)"></el-checkbox>
                 </div>
               </el-col>
               <el-col :span="11">
@@ -97,7 +97,7 @@
 
 <script setup>
 import {Close} from '@element-plus/icons-vue'
-import {reactive} from "vue"
+import {reactive, watch} from "vue"
 import Header from "../components/Header.vue"
 import Footer from "../components/Footer.vue"
 import cart from '../api/cart.js'
@@ -110,6 +110,14 @@ const get_cart = () => {
     cart.course_list = res.data.cart
 
     get_cart_total()
+
+    // 监听课程的勾选状态是否发生
+    watch(
+        [...cart.course_list],
+        ()=>{
+          get_cart_total();
+        },
+    )
   })
 }
 
@@ -134,6 +142,48 @@ const get_cart_total = () => {
     cart.selected_course_total = select_sum
   })
 }
+
+const change_select_course = (course)=>{
+  // 切换指定课程的勾选状态
+  let token = sessionStorage.token || localStorage.token;
+
+  // 有一个没被选中就取消全选
+  if(!(cart.selected_course_total === cart.course_list.length)){
+    cart.checked = false
+  }
+  cart.select_course(course.id, course.selected, token).catch(error=>{
+    ElMessage.error(error?.response?.data?.errmsg);
+  })
+}
+
+
+// 监听全选按钮的状态切换
+watch(
+    ()=>cart.checked,
+    ()=>{
+      let token = sessionStorage.token || localStorage.token;
+      // 如果全选，则所有课程的勾选状态都为true
+      if(cart.checked){
+        // 让客户端的所有课程状态先改变
+        cart.course_list.forEach((course, key)=>{
+          course.selected = true
+        })
+
+        // 所有课程的勾选状态都为true的情况下，不要发送全选的ajax请求
+        if(!(cart.selected_course_total === cart.course_list.length)){
+          cart.select_all_course(true, token)
+        }
+      }
+
+      // 所有课程的勾选状态都为true的情况下，把全选去掉，所有课程的勾选状态也变成false
+      if((cart.checked === false) && (cart.selected_course_total === cart.course_list.length)){
+        cart.course_list.forEach((course, key)=>{
+          course.selected = false
+        })
+        cart.select_all_course(false,token)
+      }
+    }
+)
 
 </script>
 
