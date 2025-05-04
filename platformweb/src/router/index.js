@@ -57,6 +57,15 @@ const routes = [
         path: '/project/:id',
         name: 'Info',
         component: () => import('../views/Info.vue'),
+    },
+    {
+        meta:{
+            title: '购物车',
+            keepAlive: true,
+        },
+        path: '/cart',
+        name: 'Cart',
+        component: () => import('../views/Cart.vue'),
     }
 ]
 
