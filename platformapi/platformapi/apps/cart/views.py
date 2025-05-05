@@ -122,3 +122,37 @@ class CartAPIView(APIView):
         redis = get_redis_connection("cart")
         redis.hdel(f"cart_{user_id}", course_id)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class CartOrderAPIView(APIView):
+    # 购物车确认下单接口
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request):
+        # 获取勾选商品列表
+        # 查询购物车中的商品课程ID列表
+        user_id = request.user.id
+        redis = get_redis_connection("cart")
+        cart_hash = redis.hgetall(f"cart_{user_id}")
+        if len(cart_hash) < 1:
+            return Response({"errmsg": "购物车没有任何商品。"}, status=status.HTTP_204_NO_CONTENT)
+
+        # 把redis中的购物车勾选课程ID信息转换成普通列表
+        cart_list = [int(course_id.decode()) for course_id, selected in cart_hash.items() if selected == b'1']
+
+        course_list = Course.objects.filter(pk__in=cart_list, is_deleted=False, is_show=True).all()
+
+        # 把course_list进行遍历，提取课程中的信息组成列表
+        data = []
+        for course in course_list:
+            data.append({
+                "id": course.id,
+                "name": course.name,
+                "course_cover": course.course_cover.url,
+                "price": float(course.price),
+                "discount": course.discount,
+                "course_type": course.get_course_type_display(),
+            })
+
+        # 返回客户端
+        return Response({"errmsg": "ok！", "cart": data})
