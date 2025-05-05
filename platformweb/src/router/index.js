@@ -66,6 +66,15 @@ const routes = [
         path: '/cart',
         name: 'Cart',
         component: () => import('../views/Cart.vue'),
+    },
+    {
+        meta:{
+            title: '下单',
+            keepAlive: true,
+        },
+        path: '/order',
+        name: 'Order',
+        component: () => import('../views/Order.vue'),
     }
 ]
 

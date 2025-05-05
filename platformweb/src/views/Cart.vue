@@ -35,7 +35,7 @@
           </el-row>
         </div>
         <div class="cart-body-table">
-          <div class="item" v-for="course_info, key in cart.course_list">
+          <div class="item" v-for="(course_info, key) in cart.course_list">
             <el-row class="full">
               <el-col :span="3">
                 <div class="item-1">
@@ -89,7 +89,7 @@
                       </span>
                     </div>
                   </div>
-                  <div class="li-3"><span class="btn">结算</span></div>
+                  <div class="li-3"><router-link to="/order" class="btn">去结算</router-link></div>
                 </div>
               </div>
             </div>
