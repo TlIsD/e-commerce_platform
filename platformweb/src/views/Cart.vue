@@ -127,6 +127,11 @@ const get_cart = () => {
           get_cart_total();
         },
     )
+  }).catch(err=>{
+    if(err?.response?.status === 400){
+      store.commit('logout')
+      ElMessage.error('登录超时，请重新登录~')
+    }
   })
 }
 

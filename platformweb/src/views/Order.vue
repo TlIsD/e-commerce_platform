@@ -227,7 +227,8 @@ import Footer from "../components/Footer.vue"
 import {useStore} from "vuex"
 import cart from "../api/cart.js"
 import order from "../api/order.js"
-import {ElMessage} from "element-plus";
+import {ElMessage} from "element-plus"
+import router from "../router/index.js";
 
 let store = useStore()
 
@@ -236,6 +237,10 @@ const get_select_course = () =>{
   let token = sessionStorage.token || localStorage.token
   cart.get_select_course(token).then(res=>{
     cart.select_course_list = res.data.cart
+    if(res.data.cart.length === 0){
+      ElMessage.error("请选择好商品再下单！")
+      router.back()
+    }
   })
 }
 
