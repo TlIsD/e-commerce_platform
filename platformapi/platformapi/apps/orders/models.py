@@ -1,4 +1,4 @@
-from platformapi.utils.models import BaseModel, models
+from models import BaseModel, models
 from users.models import User
 from courses.models import Course
 # Create your models here.
