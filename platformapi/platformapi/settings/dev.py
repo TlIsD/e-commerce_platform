@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'users',
     'courses',
     'cart',
+    'orders',
 ]
 
 MIDDLEWARE = [
@@ -168,12 +169,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': { # 日志格式设置
         'verbose': { # 详细格式
-            # levelname 日志等级
-            # asctime   发生时间
-            # module    文件名
-            # process   进程ID
-            # thread    线程ID
-            # message   异常信息
+            # levelname 日志等级 asctime 发生时间 module 文件名 process 进程ID thread 线程ID message 异常信息
             'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
             'style': '{', # 变量格式分隔符
         },
