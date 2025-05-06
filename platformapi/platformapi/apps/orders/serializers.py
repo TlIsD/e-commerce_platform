@@ -2,7 +2,10 @@ from datetime import datetime
 from rest_framework import serializers
 from django_redis import get_redis_connection
 from .models import Order, OrderDetail, Course
+from django.db import transaction
+import logging
 
+logger = logging.getLogger('django')
 
 class OrderModelSerializer(serializers.ModelSerializer):
     pay_link = serializers.CharField(read_only=True)
@@ -19,54 +22,78 @@ class OrderModelSerializer(serializers.ModelSerializer):
         redis = get_redis_connection("cart")
         user_id = self.context["request"].user.id
 
-        # 创建订单记录
-        order = Order.objects.create(
-            name="购买课程",  # 订单标题
-            user_id=user_id,  # 当前下单的用户ID
+        with transaction.atomic():
+            # 设置回滚点
+            t1 = transaction.savepoint()
 
-            # 基于redis生成分布式唯一订单号
-            order_number=datetime.now().strftime("%Y%m%d") + ("%08d" % user_id) + "%08d" % redis.incr("order_number"),
-            pay_type=validated_data.get("pay_type"),  # 支付方式
-        )
+            try:
+                # 创建订单记录
+                order = Order.objects.create(
+                    name="购买课程",  # 订单标题
+                    user_id=user_id,  # 当前下单的用户ID
 
-        # 记录本次下单的商品列表
-        cart_hash = redis.hgetall(f"cart_{user_id}")
-        if len(cart_hash) < 1:
-            raise serializers.ValidationError(detail="购物车没有要下单的商品")
+                    # 基于redis生成分布式唯一订单号
+                    order_number=datetime.now().strftime("%Y%m%d") + ("%08d" % user_id) + "%08d" % redis.incr("order_number"),
+                    pay_type=validated_data.get("pay_type"),  # 支付方式
+                )
 
-        # 提取购物车中所有勾选状态为b'1'的商品
-        course_id_list = [int(key.decode()) for key, value in cart_hash.items() if value == b'1']
+                # 记录本次下单的商品列表
+                cart_hash = redis.hgetall(f"cart_{user_id}")
+                if len(cart_hash) < 1:
+                    raise serializers.ValidationError(detail="购物车没有要下单的商品")
 
-        # 添加订单与课程的关系
-        course_list = Course.objects.filter(pk__in=course_id_list, is_deleted=False, is_show=True).all()
-        detail_list = []
-        total_price = 0  # 本次订单的总价格
-        real_price = 0  # 本次订单的实付总价
+                # 提取购物车中所有勾选状态为b'1'的商品
+                course_id_list = [int(key.decode()) for key, value in cart_hash.items() if value == b'1']
 
-        for course in course_list:
-            discount_price = float(course.discount.get("price", 0))  # 获取课程原价
-            discount_name = course.discount.get("type", "")
-            detail_list.append(OrderDetail(
-                orders = order,
-                course = course,
-                name = course.name,
-                price = course.price,
-                real_price = discount_price,
-                discount_name = discount_name,
-            ))
+                # 添加订单与课程的关系
+                course_list = Course.objects.filter(pk__in=course_id_list, is_deleted=False, is_show=True).all()
+                detail_list = []
+                total_price = 0  # 本次订单的总价格
+                real_price = 0  # 本次订单的实付总价
 
-            # 统计订单的总价和实付总价
-            total_price += float(course.price)
-            real_price += discount_price if discount_price > 0 else float(course.price)
+                for course in course_list:
+                    discount_price = float(course.discount.get("price", 0))  # 获取课程原价
+                    discount_name = course.discount.get("type", "")
+                    detail_list.append(OrderDetail(
+                        orders = order,
+                        course = course,
+                        name = course.name,
+                        price = course.price,
+                        real_price = discount_price,
+                        discount_name = discount_name,
+                    ))
 
-        # 一次性批量添加本次下单的商品记录
-        OrderDetail.objects.bulk_create(detail_list)
+                    # 统计订单的总价和实付总价
+                    total_price += float(course.price)
+                    real_price += discount_price if discount_price > 0 else float(course.price)
 
-        # 保存订单的总价格和实付价格
-        order.total_price = total_price
-        order.real_price = real_price
-        order.save()
+                # 一次性批量添加本次下单的商品记录
+                OrderDetail.objects.bulk_create(detail_list)
 
-        # todo 支付链接地址
-        order.pay_link = ""
-        return order
+                # 保存订单的总价格和实付价格
+                order.total_price = total_price
+                order.real_price = real_price
+                order.save()
+
+                # todo 支付链接地址
+                order.pay_link = ""
+
+                # 删除购物车中被勾选的商品
+                cart = {key: value for key, value in cart_hash.items() if value == b'0'}
+                pipe = redis.pipeline()
+                pipe.multi()
+                # 删除原来的购物车
+                pipe.delete(f"cart_{user_id}")
+                # 重新把未勾选的商品记录到购物车中
+                pipe.hset(f"cart_{user_id}", cart)
+                pipe.execute()
+
+                return order
+
+            except Exception as e:
+                # 事务回滚
+                transaction.savepoint_rollback(t1)
+                # 日志记录
+                logger.error(f'订单创建失败：{e}')
+
+                raise serializers.ValidationError(detail='订单创建失败')
