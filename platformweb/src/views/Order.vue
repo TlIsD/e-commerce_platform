@@ -173,8 +173,15 @@ get_select_course()
 
 const commit_order = ()=>{
   // 生成订单
-  let token = sessionStorage.token || localStorage.token;
-  order.create_order(token).then(res=>{
+  let token = sessionStorage.token || localStorage.token
+
+  // 用户选择优惠券时，获取当前选中的优惠券发放记录id
+  let user_coupon_id = -1
+  if(order.select !== -1){
+    user_coupon_id= order.coupon_list[order.select].user_coupon_id
+  }
+
+  order.create_order(user_coupon_id, token).then(res=>{
     console.log(res.data.order_number)  // todo 订单号
     console.log(res.data.pay_link)  // todo 支付链接
     // 成功提示

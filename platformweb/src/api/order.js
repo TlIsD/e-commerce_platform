@@ -13,9 +13,10 @@ const order = reactive({
     pay_type: 0,  // 支付方式
 
     // 生成订单
-    create_order(token){
+    create_order(user_coupon_id, token){
         return http.post("/orders/",{
-            pay_type: this.pay_type
+            pay_type: this.pay_type,
+            user_coupon_id,
         }, {
             headers:{
                 Authorization: `jwt ${token}`,
