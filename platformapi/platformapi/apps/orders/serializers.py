@@ -85,7 +85,7 @@ class OrderModelSerializer(serializers.ModelSerializer):
                 # 删除原来的购物车
                 pipe.delete(f"cart_{user_id}")
                 # 重新把未勾选的商品记录到购物车中
-                pipe.hset(f"cart_{user_id}", cart)
+                pipe.hmset(f"cart_{user_id}", cart)
                 pipe.execute()
 
                 return order
