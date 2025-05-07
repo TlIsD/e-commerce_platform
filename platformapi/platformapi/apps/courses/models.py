@@ -71,6 +71,7 @@ class Course(BaseModel):
     lessons = models.IntegerField(default=0, verbose_name="总课时数量")
     pub_lessons = models.IntegerField(default=0, verbose_name="已更新课时数量")
     price = models.DecimalField(max_digits=10,decimal_places=2, verbose_name="课程原价",default=0)
+    credit = models.IntegerField(blank=True, null=True, default=0, verbose_name="积分")
     recommend_home_hot = models.BooleanField(default=False, verbose_name="是否推荐到首页新课栏目")
     recommend_home_top = models.BooleanField(default=False, verbose_name="是否推荐到首页必学栏目")
     direction = models.ForeignKey("CourseDirection", related_name="course_list", on_delete=models.DO_NOTHING, null=True, blank=True, db_constraint=False, verbose_name="学习方向")

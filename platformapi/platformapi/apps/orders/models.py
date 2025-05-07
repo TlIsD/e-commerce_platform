@@ -29,6 +29,7 @@ class Order(BaseModel):
     order_desc = models.TextField(null=True, blank=True, max_length=500, verbose_name="订单描述")
     pay_time = models.DateTimeField(null=True, blank=True, verbose_name="支付时间")
     user = models.ForeignKey(User, related_name='user_orders', on_delete=models.DO_NOTHING, db_constraint=False, verbose_name="下单用户")
+    credit = models.IntegerField(default=0, null=True, blank=True, verbose_name="积分")
 
     class Meta:
         db_table = "ec_order"
