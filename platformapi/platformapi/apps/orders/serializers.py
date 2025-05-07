@@ -11,12 +11,11 @@ import logging
 logger = logging.getLogger('django')
 
 class OrderModelSerializer(serializers.ModelSerializer):
-    pay_link = serializers.CharField(read_only=True)
     user_coupon_id = serializers.IntegerField(write_only=True, default=-1)
 
     class Meta:
         model = Order
-        fields = ["pay_type", "id", "order_number", "pay_link", "user_coupon_id", "credit"]
+        fields = ["pay_type", "id", "order_number", "user_coupon_id", "credit"]
         read_only_fields = ["id", "order_number"]
         extra_kwargs = {
             "pay_type": {"write_only": True},
@@ -153,9 +152,6 @@ class OrderModelSerializer(serializers.ModelSerializer):
                     # 把优惠券从redis中移除
                     redis = get_redis_connection("coupon")
                     redis.delete(f"{user.id}:{user_coupon_id}")
-
-                # todo 支付链接地址
-                order.pay_link = ""
 
                 return order
 
