@@ -200,14 +200,18 @@ const commit_order = ()=>{
   }
 
   order.create_order(user_coupon_id, token).then(res=>{
-    console.log(res.data.order_number)  // todo 订单号
-    console.log(res.data.pay_link)  // todo 支付链接
-
     ElMessage.success("下单成功！马上跳转到支付页面，请稍候~")
+
     // 更新商品数量和购物车中的商品数量
     store.commit("set_cart_total", store.state.cart_total - cart.select_course_list.length)
     // 订单生成是先临时扣除使用的积分
     order.has_credit -= order.credit
+
+    // 根据订单号获取支付链接，并打开支付页面。
+    order.alipay_page_pay(res.data.order_number).then(res=>{
+      window.open(res.data.link,"_blank");
+    })
+
   }).catch(error=>{
     if(error?.response?.status===400){
       store.commit('logout')
