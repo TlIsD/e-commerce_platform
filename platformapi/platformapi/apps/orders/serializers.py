@@ -61,6 +61,9 @@ class OrderModelSerializer(serializers.ModelSerializer):
                 # 提取购物车中所有勾选状态为b'1'的商品
                 course_id_list = [int(key.decode()) for key, value in cart_hash.items() if value == b'1']
 
+                if len(course_id_list) < 1:
+                    raise serializers.ValidationError(detail="购物车没有选择下单的商品")
+
                 # 添加订单与课程的关系
                 course_list = Course.objects.filter(pk__in=course_id_list, is_deleted=False, is_show=True).all()
                 detail_list = []
