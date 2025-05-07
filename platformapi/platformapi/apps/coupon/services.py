@@ -49,8 +49,11 @@ def get_user_enable_coupon_list(user_id):
     direction_id_list = set()
     for course in course_list:
         # 获取被勾选的商品课程的父类相关id列表，并保证去重
-        category_id_list.add(int(course.category.id))
-        direction_id_list.add(int(course.direction.id))
+        if course.category is not None:
+            category_id_list.add(int(course.category.id))
+
+        if course.direction is not None:
+            direction_id_list.add(int(course.direction.id))
 
     # 创建一个列表用于保存所有的可用优惠券
     enable_coupon_list = []
