@@ -28,6 +28,13 @@ const order = reactive({
     timer: 0,  // 订单支付倒计时定时器的标记符
     order_number: null,  // 订单号
 
+    order_status: -1,  // 个人中心的默认显示的订单状态选项
+    order_status_choices: [],  // 个人中心的订单支付状态选项
+    page: 1,  // 个人中心的订单列表对应的页码
+    size: 5,  // 个人中心的订单列表对应的单页数据量
+    order_list:[],  // 个人中心的订单列表
+    count: 0,  // 个人中心的订单列表的总数据量
+
     // 生成订单
     create_order(user_coupon_id, token){
         return http.post("/orders/",{
@@ -60,6 +67,23 @@ const order = reactive({
     query_order(token){
         return http.get(`/payments/alipay/query/${this.order_number}`,{
             headers:{
+                Authorization: `jwt ${token}`,
+            }
+        })
+    },
+    // 获取订单状态选项
+    get_order_status(){
+        return http.get('/orders/pay/choices/')
+    },
+    // 获取订单列表[分页显示]
+    get_order_list(token){
+        return http.get('/orders/list/', {
+            params: {
+                page: this.page,
+                size: this.size,
+                status: this.order_status,
+            },
+            headers: {
                 Authorization: `jwt ${token}`,
             }
         })

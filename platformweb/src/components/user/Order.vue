@@ -3,46 +3,35 @@
     <div class="right-title">
       <h2>我的订单</h2>
       <ul>
-        <li class="action"><router-link to="/user/order">全部<i class="js-all-num">3</i></router-link></li>
-        <li><router-link to="/user/order?type=unpaid">未支付</router-link></li>
-        <li><router-link to="/user/order?type=paid">已完成</router-link></li>
-        <li><router-link to="/user/order?type=invalid">已取消</router-link></li>
+        <li :class="{action: order.order_status===-1}"><a href="" @click.prevent="order.order_status=-1">全部<i class="js-all-num" v-if="order.order_status===-1">{{order.count}}</i></a></li>
+        <li :class="{action: order.order_status===status[0]}" v-for="status in order.order_status_chioces">
+          <a href="" @click.prevent="order.order_status=status[0]">{{status[1]}}<i class="js-all-num" v-if="order.order_status===status[0]">{{order.count}}</i></a>
+        </li>
       </ul>
     </div>
     <div class="myOrder">
       <ul class="myOrder-list">
-        <li data-flag="2107312249236254">
+        <li v-for="order_info in order.order_list">
           <p class="myOrder-number">
-            <i class="imv2-receipt"></i>订单编号：2107312249236254
-            <span class="date">2021-07-31 22:49:23</span>
-            <i class="imv2-delete js-order-del" title="删除订单"></i>
+            <i class="imv2-receipt"></i>订单编号：{{order_info.order_number}}
+            <span class="date">{{order_info.created_time.replace("T", " ").split(".")[0]}}</span>
+            <span class="imv2-delete js-order-del">删除订单</span>
             <router-link to="/user/help" target="_blank" class="myfeedback r">售后帮助</router-link>
           </p>
           <div class="myOrder-course clearfix">
-            <dl class="course-del l">
+            <dl class="course-del l"  v-for="course_info in order_info.order_courses">
               <dd class="clearfix">
-                <router-link to="" class="l"><img class="l" src="" width="160" height="90"></router-link>
+                <router-link :to="`/project/${course_info.course_id}`" class="l"><img class="l" :src="course_info.course_cover" width="160" height="90"></router-link>
                 <div class="del-box l">
-                  <!-- type为类型 1实战购买 2实战续费 4就业班购买 5就业班续费 -->
-                  <!-- cate 订单类型 0无优惠 1组合套餐 2学生优惠 -->
-                  <router-link to="/course/525"><p class="course-name">晋级TypeScript高手，成为抢手的前端开发人才</p></router-link>
+                  <router-link :to="`/project/${course_info.course_id}`"><p class="course-name">{{course_info.course_name}}</p></router-link>
                   <p class="price-btn-box clearfix">
                     <!-- 如果有优惠券 -->
+                    <span class="l truepay-text" v-if="course_info.price > course_info.real_price">原价</span>
+                    <span class="l line-though clearfix" style="float: none" v-if="course_info.price > course_info.real_price">￥{{course_info.price}}</span>
+                    <span class="l truepay-text" v-if="course_info.price > course_info.real_price">折扣</span>
+                    <span class="l line-though clearfix" style="float: none" v-if="course_info.price > course_info.real_price">￥{{parseFloat(course_info.price - course_info.real_price).toFixed(2)}}</span>
                     <span class="l truepay-text">实付</span>
-                    <span class="l course-little-price">￥358.00</span>
-                  </p>
-                </div>
-              </dd>
-              <dd class="clearfix">
-                <router-link to="" class="l"><img class="l" src="" width="160" height="90"></router-link>
-                <div class="del-box l">
-                  <!-- type为类型 1实战购买 2实战续费 4就业班购买 5就业班续费 -->
-                  <!-- cate 订单类型 0无优惠 1组合套餐 2学生优惠 -->
-                  <router-link to="/course/525"><p class="course-name">晋级TypeScript高手，成为抢手的前端开发人才</p></router-link>
-                  <p class="price-btn-box clearfix">
-                    <!-- 如果有优惠券 -->
-                    <span class="l truepay-text">实付</span>
-                    <span class="l course-little-price">￥358.00</span>
+                    <span class="l course-little-price">￥{{course_info.real_price}}</span>
                   </p>
                 </div>
               </dd>
@@ -51,151 +40,134 @@
             <div class="course-money l pt15">
               <div class="wrap">
                 <div class="type-box clearfix mb10">
-                  <p class="type-text l">原价</p>
-                  <p class="type-price l line-though"><span class="RMB">¥</span>399.00</p>
+                  <p class="type-text l">订单总价</p>
+                  <p class="type-price l line-though"><span class="RMB">¥</span>{{order_info.total_price}}</p>
                 </div>
-                <div class="type-box clearfix mb10">
-                  <p class="type-text l">折扣</p>
-                  <p class="type-price l">-<span class="RMB">¥</span>41.00</p>
+                <div class="type-box clearfix mb10" v-if="order_info.total_price > order_info.real_price">
+                  <p class="type-text l" v-if="order_info.credit>0">积分折扣</p>
+                  <p class="type-text l" v-if="order_info.coupon.id">优惠券折扣</p>
+                  <p class="type-price l">-<span class="RMB">¥</span>{{parseFloat(order_info.total_price - order_info.real_price).toFixed(2)}}</p>
                 </div>
                 <div class="total-box clearfix">
-                  <p class="type-text l">实付</p>
-                  <p class="type-price l"><span class="RMB">¥</span>358.00</p>
+                  <p class="type-text l">订单实付</p>
+                  <p class="type-price l"><span class="RMB">¥</span>{{order_info.real_price}}</p>
                 </div>
               </div>
             </div>
-            <div class="course-action l">
-              <a class="pay-now" href="/pay/cashier?trade_number=2108100232047715">立即支付</a>
-              <a class="order-cancel" href="javascript:void(0);">取消订单</a>
+            <div class="course-action l" v-if="order_info.order_status === 0">
+              <a class="pay-now" href="" @click.prevent="pay_now(order_info)">立即支付</a>
+              <a class="order-cancel" href="" @click.prevent="pay_cancel(order_info)">取消订单</a>
             </div>
-          </div>
-        </li>
-        <li data-flag="2107312108465190">
-          <p class="myOrder-number">
-            <i class="imv2-receipt"></i>订单编号：2107312108465190
-            <span class="date">2021-07-31 21:08:46</span>
-            <i class="imv2-delete js-order-del" title="删除订单"></i>
-            <router-link to="/user/help" target="_blank" class="myfeedback r">售后帮助</router-link>
-          </p>
-          <div class="myOrder-course clearfix">
-            <dl class="course-del l">
-              <dd class="clearfix">
-                <router-link to="/course/301" class="l">
-                  <img class="l" src="" width="160" height="90">
-                </router-link>
-                <div class="del-box l">
-                  <!-- type为类型 1实战购买 2实战续费 4就业班购买 5就业班续费 -->
-                  <!-- cate 订单类型 0无优惠 1组合套餐 2学生优惠 -->
-                  <router-link to="/course/301"><p class="course-name">Hadoop 系统入门+核心精讲</p></router-link>
-                  <p class="price-btn-box clearfix">
-                    <!-- 如果有优惠券 -->
-                    <span class="l truepay-text">实付</span>
-                    <span class="l course-little-price">￥288.00</span>
-                  </p>
-                </div>
-              </dd>
-              <dd class="clearfix">
-                <router-link to="/course/464" class="l">
-                  <img class="l" src="" width="160" height="90">
-                </router-link>
-                <div class="del-box l">
-                  <!-- type为类型 1实战购买 2实战续费 4就业班购买 5就业班续费 -->
-                  <!-- cate 订单类型 0无优惠 1组合套餐 2学生优惠 -->
-                  <router-link to="/course/464"><p class="course-name">Kubernetes 入门到进阶实战，系统性掌握 K8s 生产实践</p></router-link>
-                  <p class="price-btn-box clearfix">
-                    <!-- 如果有优惠券 -->
-                    <span class="l truepay-text">实付</span>
-                    <span class="l course-little-price">￥299.00</span>
-                  </p>
-                </div>
-              </dd>
-              <dd class="clearfix">
-                <router-link to="/course/501" class="l">
-                  <img class="l" src="" width="160" height="90">
-                </router-link>
-                <div class="del-box l">
-                  <!-- type为类型 1实战购买 2实战续费 4就业班购买 5就业班续费 -->
-                  <!-- cate 订单类型 0无优惠 1组合套餐 2学生优惠 -->
-                  <router-link to="/course/501"><p class="course-name">2021必修  CSS架构系统精讲 理论+实战玩转蘑菇街</p></router-link>
-                  <p class="price-btn-box clearfix">
-                    <!-- 如果有优惠券 -->
-                    <span class="l truepay-text">实付</span>
-                    <span class="l course-little-price">￥288.00</span>
-                  </p>
-                </div>
-              </dd>
-              <dd class="clearfix">
-                <router-link to="/course/503" class="l">
-                  <img class="l" src="" width="160" height="90">
-                </router-link>
-                <div class="del-box l">
-                  <!-- type为类型 1实战购买 2实战续费 4就业班购买 5就业班续费 -->
-                  <!-- cate 订单类型 0无优惠 1组合套餐 2学生优惠 -->
-                  <router-link to="/course/503"><p class="course-name">Vue3开发企业级音乐Web App 明星讲师带你学习大厂高质量代码</p></router-link>
-                  <p class="price-btn-box clearfix">
-                    <!-- 如果有优惠券 -->
-                    <span class="l truepay-text">实付</span>
-                    <span class="l course-little-price">￥448.00</span>
-                  </p>
-                </div>
-              </dd>
-              <dd class="clearfix">
-                <router-link to="/course/522" class="l">
-                  <img class="l" src="" width="160" height="90">
-                </router-link>
-                <div class="del-box l">
-                  <!-- type为类型 1实战购买 2实战续费 4就业班购买 5就业班续费 -->
-                  <!-- cate 订单类型 0无优惠 1组合套餐 2学生优惠 -->
-                  <router-link to="/course/522"><p class="course-name"> Spring Cloud / Alibaba 微服务架构实战，从架构设计到开发实践，手把手实现</p></router-link>
-                  <p class="price-btn-box clearfix">
-                    <!-- 如果有优惠券 -->
-                    <span class="l truepay-text">实付</span>
-                    <span class="l course-little-price">￥428.00</span>
-                  </p>
-                </div>
-              </dd>
-            </dl>
-            <!-- 使用优惠券 -->
-            <div class="course-money l pt15">
-              <div class="wrap">
-                <div class="type-box clearfix mb10">
-                  <p class="type-text l">原价</p>
-                  <p class="type-price l line-though">
-                    <span class="RMB">¥</span>
-                    1811.00
-                  </p>
-                </div>
-                <div class="type-box clearfix mb10">
-                  <p class="type-text l">折扣</p>
-                  <p class="type-price l">
-                    -
-                    <span class="RMB">¥</span>
-                    60.00
-                  </p>
-                </div>
-                <div class="total-box clearfix">
-                  <p class="type-text l">实付</p>
-                  <p class="type-price l">
-                    <span class="RMB">¥</span>
-                    1751.00
-                  </p>
-                </div>
-              </div>
+            <div class="course-action l" v-else-if="order_info.order_status === 1">
+              <a class="pay-now" href="" @click.prevent="evaluate_now(order_info)">立即评价</a>
+              <a class="order-cancel" href="" @click.prevent="order_refund(order_info)">申请退款</a>
             </div>
-            <div class="course-action l">
-              <p class="order-close">已过期</p>
+            <div class="course-action l" v-else-if="order_info.order_status === 2">
+              <a class="pay-now" href="" @click.prevent="delete_order(order_info)">删除订单</a>
+            </div>
+            <div class="course-action l" v-else-if="order_info.order_status === 3">
+              <a class="pay-now" href="" @click.prevent="recovery_now(order_info)">订单恢复</a>
+              <a class="pay-now" href="" @click.prevent="delete_order(order_info)">删除订单</a>
             </div>
           </div>
         </li>
       </ul>
     </div>
     <div class="page" style="text-align: center">
-      <el-pagination background layout="prev, pager, next" :total="1000"></el-pagination>
+      <el-pagination
+          background
+          layout="sizes, prev, pager, next, jumper"
+          :total="order.count"
+          :page-sizes="[5, 10, 15, 20]"
+          :page-size="order.size"
+          @current-change="current_page"
+          @size-change="current_size"
+      ></el-pagination>
     </div>
   </div>
 </template>
 
 <script setup>
+import {watch} from "vue";
+import order from "../../api/order"
+
+const getOrderStatus = ()=>{
+  // 获取订单状态选项
+  order.get_order_status().then(res=>{
+    order.order_status_chioces = res.data;
+  })
+}
+getOrderStatus()
+
+
+const getOrderList = ()=>{
+  // 获取订单列表
+  let token = sessionStorage.token || localStorage.token;
+  order.get_order_list(token).then(res=>{
+    order.order_list = res.data.results
+    order.count = res.data.count
+  })
+}
+getOrderList()
+
+let pay_now = (order_info)=>{
+  // 订单继续支付
+}
+let pay_cancel = (order_info)=>{
+  // 取消订单
+}
+
+let evaluate_now = (order_info)=>{
+  // 订单评价
+}
+
+let order_refund = (order_info)=>{
+  // 申请退款
+}
+
+let delete_order = (order_info)=>{
+  // 删除订单
+}
+
+let recovery_now = (order)=>{
+  // 恢复订单
+}
+
+// 切换页码
+let current_page = (page)=>{
+  order.page = page;
+}
+
+// 切换分页数据量
+let current_size = (size)=>{
+  order.size = size;
+}
+
+// 监听页码
+watch(
+    ()=>order.page,
+    ()=>{
+      getOrderList()
+    }
+)
+
+// 监听页面数据量大小
+watch(
+    ()=>order.size,
+    ()=>{
+      order.page = 1;
+      getOrderList()
+    }
+)
+
+// 监听订单状态选项
+watch(
+    ()=>order.order_status,
+    ()=>{
+      order.page = 1;
+      getOrderList()
+    }
+)
 
 </script>
 
