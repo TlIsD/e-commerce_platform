@@ -100,3 +100,64 @@ class AlipayAPIViewSet(ViewSet):
             "real_price": float(order.real_price),
             "course_list": serializer.data
         })
+
+    def query(self, request, order_number):
+        # 主动查询订单支付的支付结果
+        try:
+            order = Order.objects.get(order_number=order_number)
+            if order.order_status > 1:
+                return Response({"errmsg": "订单超时或已取消！"}, status=status.HTTP_400_BAD_REQUEST)
+        except Order.DoesNotExist:
+            return Response({"errmsg": "订单不存在！"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 获取当前订单相关的课程信息，用于返回给客户端
+        order_courses = order.order_courses.all()
+        course_list = [item.course for item in order_courses]
+        courses_list = []
+        for course in course_list:
+            courses_list.append(UserCourse(course=course, user=order.user))
+
+        if order.order_status == 0:
+            # 请求支付宝，查询订单的支付结果
+            alipay = AliPaySDK()
+            result = alipay.query(order_number)
+            print(f"result-{result}")
+            if result.get("trade_status", None) in ["TRADE_FINISHED", "TRADE_SUCCESS"]:
+                # 支付成功
+                with transaction.atomic():
+                    save_id = transaction.savepoint()
+                    try:
+                        now_time = datetime.now()
+                        # 1. 修改订单状态
+                        order.pay_time = now_time
+                        order.order_status = 1
+                        order.save()
+                        # 2.1 记录扣除个人积分的流水信息
+                        if order.credit > 0:
+                            Credit.objects.create(operation=1, number=order.credit, user=order.user)
+
+                        # 2.2 补充个人的优惠券使用记录
+                        coupon_log = CouponLog.objects.filter(order=order).first()
+                        if coupon_log:
+                            coupon_log.use_time = now_time
+                            coupon_log.use_status = 1  # 1 表示已使用
+                            coupon_log.save()
+
+                        # 3. 用户和课程的关系绑定
+                        user_course_list = []
+                        for course in course_list:
+                            user_course_list.append(UserCourse(course=course, user=order.user))
+                        UserCourse.objects.bulk_create(user_course_list)
+
+                        # todo 4. 取消订单超时
+
+                    except Exception as e:
+                        logger.error(f"订单支付处理同步结果发生未知错误：{e}")
+                        transaction.savepoint_rollback(save_id)
+                        return Response({"errmsg": "当前订单支付未完成！请联系客服工作人员！"},
+                                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            else:
+                # 当前订单未支付
+                return Response({"errmsg": "当前订单未支付！"}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({"errmsg": "当前订单已支付！"})

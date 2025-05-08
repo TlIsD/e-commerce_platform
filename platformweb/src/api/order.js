@@ -23,6 +23,11 @@ const order = reactive({
     pay_time: undefined, // 付款时间
     is_show: true,  // 是否展示支付成功页面
 
+    loading: false,  // 是否显示遮罩层
+    timeout: 0,  // 订单支付超时倒计时
+    timer: 0,  // 订单支付倒计时定时器的标记符
+    order_number: null,  // 订单号
+
     // 生成订单
     create_order(user_coupon_id, token){
         return http.post("/orders/",{
@@ -44,12 +49,20 @@ const order = reactive({
         })
     },
     // 获取订单的支付宝支付链接信息
-    alipay_page_pay(order_number){
-        return http.get(`/payments/alipay/${order_number}/`)
+    alipay_page_pay(){
+        return http.get(`/payments/alipay/${this.order_number}/`)
     },
     // 把地址栏中的查询字符串(支付成功以后的同步回调通知)转发给后端
     relay_alipay_result(query_string){
         return http.get(`/payments/alipay/result/${query_string}`)
+    },
+    // 查询订单支付结果
+    query_order(token){
+        return http.get(`/payments/alipay/query/${this.order_number}`,{
+            headers:{
+                Authorization: `jwt ${token}`,
+            }
+        })
     }
 })
 

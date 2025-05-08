@@ -12,10 +12,11 @@ logger = logging.getLogger('django')
 
 class OrderModelSerializer(serializers.ModelSerializer):
     user_coupon_id = serializers.IntegerField(write_only=True, default=-1)
+    order_timeout = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Order
-        fields = ["pay_type", "id", "order_number", "user_coupon_id", "credit"]
+        fields = ["pay_type", "id", "order_number", "user_coupon_id", "credit", "order_timeout"]
         read_only_fields = ["id", "order_number"]
         extra_kwargs = {
             "pay_type": {"write_only": True},
@@ -155,6 +156,8 @@ class OrderModelSerializer(serializers.ModelSerializer):
                     # 把优惠券从redis中移除
                     redis = get_redis_connection("coupon")
                     redis.delete(f"{user.id}:{user_coupon_id}")
+
+                order.order_timeout = constants.ORDER_TIMEOUT
 
                 return order
 

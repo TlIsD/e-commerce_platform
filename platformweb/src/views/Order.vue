@@ -129,6 +129,13 @@
         </div>
       </div>
     </div>
+    <div class="loading" v-if="order.loading" @click="check_order">
+      <div class="box">
+        <p class="time">{{fill0(parseInt(order.timeout/60))}}:{{ fill0(order.timeout%60)}}</p>
+        <i class="el-icon-loading"></i><br>
+        <p>若支付完成，请点击关闭当前页面</p>
+      </div>
+    </div>
     <Footer/>
   </div>
 </template>
@@ -142,6 +149,7 @@ import cart from "../api/cart.js"
 import order from "../api/order.js"
 import {ElMessage} from "element-plus"
 import router from "../router/index.js";
+import {fill0} from "../utils/function.js";
 
 let store = useStore()
 
@@ -183,7 +191,7 @@ const get_select_course = () =>{
       order.max_use_credit = order.has_credit
     }
 
-    cart.total_price = sum;
+    cart.total_price = sum
   })
 }
 
@@ -200,16 +208,37 @@ const commit_order = ()=>{
   }
 
   order.create_order(user_coupon_id, token).then(res=>{
+    // 支付倒计时提示
+    order.order_number = res.data.order_number  // 订单号
+    order.loading = true  // 显示遮罩层
+    order.timeout = res.data.order_timeout  // 订单超时的时间，为15分钟
+    clearInterval(order.timer)
+    order.timer = setInterval(() => {
+      if(order.timeout > 1){
+        order.timeout=order.timeout - 1;
+      }else{
+        ElMessage.error("订单超时！如果您已经支付成功！请点击关闭当前弹窗！当前页面15秒后关闭！");
+        clearInterval(order.timer);
+        // 发送一个订单查询
+        check_order();
+
+        setTimeout(()=>{
+          // 跳转到用户的订单用心
+          router.push("/user/order")
+        }, 1500)
+      }
+    }, 3000)
+
     ElMessage.success("下单成功！马上跳转到支付页面，请稍候~")
 
     // 更新商品数量和购物车中的商品数量
-    store.commit("set_cart_total", store.state.cart_total - cart.select_course_list.length)
+    store.commit("cart_total", store.state.cart_total - cart.select_course_list.length)
     // 订单生成是先临时扣除使用的积分
     order.has_credit -= order.credit
 
     // 根据订单号获取支付链接，并打开支付页面。
-    order.alipay_page_pay(res.data.order_number).then(res=>{
-      window.open(res.data.link,"_blank");
+    order.alipay_page_pay().then(res=>{
+      window.open(res.data.link,"_blank")
     })
 
   }).catch(error=>{
@@ -222,7 +251,7 @@ const commit_order = ()=>{
 
 // 获取本次下单的可用优惠券
 const get_enable_coupon_list = ()=>{
-  let token = sessionStorage.token || localStorage.token;
+  let token = sessionStorage.token || localStorage.token
   order.get_enable_coupon_list(token).then(res=>{
     order.coupon_list = res.data.coupon_list
     // 获取积分相关信息
@@ -241,6 +270,18 @@ const conver_credit = ()=>{
 const max_conver_credit = ()=>{
   order.credit=order.max_use_credit
   conver_credit()
+}
+
+// 查询订单状态
+const check_order = ()=>{
+  let token = sessionStorage.token || localStorage.token
+  order.query_order(token).then(res=>{
+    order.loading = false;
+    router.push("/user/order")
+  }).catch(error=>{
+    console.log(error);
+    ElMessage.error(error.response.data.errmsg)
+  })
 }
 
 // 监听用户选择的支付方式
@@ -1432,5 +1473,35 @@ body {
 
 .pay-type .list img {
   margin-right: 10px;
+}
+
+.loading{
+  width: 100%;
+  height: 100%;
+  margin: auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+  background-color: rgba(0,0,0,.7);
+}
+.box{
+  width: 300px;
+  height: 150px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  font-size: 40px;
+  text-align: center;
+  padding-top: 50px;
+  color: #fff;
+}
+.box .time{
+  font-size: 22px;
 }
 </style>
