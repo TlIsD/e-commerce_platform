@@ -151,7 +151,7 @@ class OrderModelSerializer(serializers.ModelSerializer):
 
                 # 如果有使用了优惠券，则把优惠券和当前订单进行绑定
                 if user_coupon:
-                    user_coupon.order = order
+                    user_coupon.orders = order
                     user_coupon.save()
                     # 把优惠券从redis中移除
                     redis = get_redis_connection("coupon")

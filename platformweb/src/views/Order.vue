@@ -243,7 +243,6 @@ const commit_order = ()=>{
 
   }).catch(error=>{
     if(error?.response?.status===400){
-      store.commit('logout')
       ElMessage.success("登录超时！请重新登录后再继续操作~")
     }
   })
