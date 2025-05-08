@@ -87,6 +87,14 @@ const order = reactive({
                 Authorization: `jwt ${token}`,
             }
         })
+    },
+    // 取消订单操作
+    order_cancel(order_id, token){
+        return http.put(`/orders/${order_id}/`, {},{
+            headers:{
+                Authorization: `jwt ${token}`,
+            }
+        })
     }
 })
 

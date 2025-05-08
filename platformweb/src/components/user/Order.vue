@@ -94,7 +94,7 @@ import order from "../../api/order"
 const getOrderStatus = ()=>{
   // 获取订单状态选项
   order.get_order_status().then(res=>{
-    order.order_status_chioces = res.data;
+    order.order_status_chioces = res.data
   })
 }
 getOrderStatus()
@@ -111,10 +111,37 @@ const getOrderList = ()=>{
 getOrderList()
 
 let pay_now = (order_info)=>{
-  // 订单继续支付
+  // 订单再次支付
+  order.order_number = order_info.order_number;
+  let token = sessionStorage.token || localStorage.token;
+  if (order.pay_type === 0) {
+    // 如果当前订单的支付方式属于支付宝，发起支付宝支付
+    order.alipay_page_pay(order_info.order_number, token).then(res => {
+      // 新开浏览器窗口，跳转到支付页面
+      window.open(res.data.link, "_blank");
+      // 新建定时器，每隔5秒到服务端查询一次当前订单的支付结果
+      let max_query_timer = 180
+      clearInterval(order.timer)
+      order.timer = setInterval(() => {
+        max_query_timer--
+        if(max_query_timer > 0){
+          order.query_order(token).then(res => {
+            order_info.order_status = 1
+            clearInterval(order.timer)
+          })
+        }else{
+          clearInterval(order.timer)
+        }
+      }, 5000)
+    })
+  }
 }
 let pay_cancel = (order_info)=>{
   // 取消订单
+  let token = sessionStorage.token || localStorage.token
+  order.order_cancel(order_info.id,token).then(res=>{
+    order_info.order_status = 2
+  })
 }
 
 let evaluate_now = (order_info)=>{
@@ -135,12 +162,12 @@ let recovery_now = (order)=>{
 
 // 切换页码
 let current_page = (page)=>{
-  order.page = page;
+  order.page = page
 }
 
 // 切换分页数据量
 let current_size = (size)=>{
-  order.size = size;
+  order.size = size
 }
 
 // 监听页码
@@ -155,7 +182,7 @@ watch(
 watch(
     ()=>order.size,
     ()=>{
-      order.page = 1;
+      order.page = 1
       getOrderList()
     }
 )
@@ -164,7 +191,7 @@ watch(
 watch(
     ()=>order.order_status,
     ()=>{
-      order.page = 1;
+      order.page = 1
       getOrderList()
     }
 )
