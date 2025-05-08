@@ -32,13 +32,35 @@ const routes = [
     },
     {
         meta:{
-            title: '个人中心',
+            title: "个人中心",
             keepAlive: true,
-            authorization: true,  // 是否要验证
+            authorization: true,
         },
         path: '/user',
-        name: 'User',
-        component: () => import('../views/User.vue'),
+        name: "User",
+        component: ()=> import("../views/User.vue"),
+        children: [
+            {
+                meta:{
+                    title: "个人信息",
+                    keepAlive: true,
+                    authorization: true,
+                },
+                path: '',
+                name: "UserInfo",
+                component: ()=> import("../components/user/Info.vue"),
+            },
+            {
+                meta:{
+                    title: "我的订单",
+                    keepAlive: true,
+                    authorization: true,
+                },
+                path: 'order',
+                name: "UserOrder",
+                component: ()=> import("../components/user/Order.vue"),
+            },
+        ]
     },
     {
         meta:{
