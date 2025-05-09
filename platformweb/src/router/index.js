@@ -117,6 +117,16 @@ const routes = [
         name: "PaySuccess",
         component: ()=> import("../views/AliPaySuccess.vue"),
     },
+    {
+        meta:{
+            title: "学习中心",
+            keepAlive: true,
+            authorization: true
+        },
+        path: '/user/study/:course',
+        name: "Study",
+        component: ()=> import("../views/Study.vue"),
+    },
 ]
 
 // 实例化

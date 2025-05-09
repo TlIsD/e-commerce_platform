@@ -44,4 +44,18 @@ input{
   border-left: 0;
   border-top: 0;
 }
+ .player{
+   background-color: #2c70b6;
+ }
+.player .el-tree-node__content:hover,
+.player .el-tree-node__content:active,
+.player .el-tree-node:focus>.el-tree-node__content,
+.player .el-tree--highlight-current .el-tree-node.is-current>.el-tree-node__content{
+  background-color: #bdc0c3;
+  color: #4d555d;
+}
+.player .el-tree{
+  background-color: #2c70b6;
+  color: #fff;
+}
 </style>

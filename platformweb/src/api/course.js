@@ -10,7 +10,7 @@ const course = reactive({
 
     ordering: '-id',  // 课程排序条件
     page: 1,  // 当前页码
-    size: 5,  // 当前页数据量
+    size: 8,  // 当前页数据量
     count: 0,  // 课程列表的数量
     has_perv: false,  // 是否有上一页
     has_next: false,  // 是否有下一页
@@ -31,8 +31,20 @@ const course = reactive({
 
     course_type: [],  // 我的课程-课程类型列表
     current_course_type: -1,  // 我的课程-当前显示的课程类型，默认为-1，表示全部
-    user_course_count: 0,    // 我的课程-课程列表总数
-    user_course_list:[], // 用户中心的课程列表
+    user_course_count: 0,  // 我的课程-课程列表总数
+    user_course_list:[],  // 用户中心的课程列表
+
+    lesson_list: [],
+    lesson_tree_props: {
+        children: 'children',
+        label: 'label',
+    },
+    user_course: {},  // 用户在当前课程的学习进度记录
+    current_chapter: null,  // 正在学习的章节ID
+    current_lesson: null,  // 正在学习的课时ID
+    lesson_link: null,  // 正在学习的课时视频ID
+    player: null,  // 当前页面的视频播放器对象
+    current_time: 0,  // 播放器，当前播放时间
 
     // 获取学习方向信息
     get_course_direction(){
@@ -113,6 +125,36 @@ const course = reactive({
             }
         })
     },
+    // 获取用户的指定课程信息包含学习进度
+    get_user_course(token){
+        return http.get(`/users/course/${this.course_id}/`,{
+            headers:{
+                Authorization: `jwt ${token}`,
+            }
+        })
+    },
+    // 获取课程课时学习进度时间
+    get_lesson_study_time(lesson, token){
+        return http.get('/users/lesson/', {
+            params: {
+                lesson,
+            },
+            headers:{
+                Authorization: `jwt ${token}`,
+            }
+        })
+    },
+    // 获取课时学习的进度
+    update_user_study_progress(lesson, seed, token){
+        return http.post('/users/progress/',{
+            time: seed,
+            lesson: lesson,
+        },{
+            headers:{
+                Authorization: `jwt ${token}`,
+            }
+        })
+    }
 })
 
 export default course;
