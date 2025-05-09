@@ -27,3 +27,6 @@ CREDIT_TO_MONEY = 10
 
 # 订单超时时间(秒)
 ORDER_TIMEOUT = 15 * 60
+
+# 更新课时学习时间时的跳动最大阀值
+MAV_SEEK_TIME = 300

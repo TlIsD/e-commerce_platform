@@ -357,6 +357,15 @@ ALIPAY = {
     "notify_url": "http://api.platform.cn:8000/payments/alipay/notify",  # 异步回调结果通知地址
 }
 
+# 保利威视频加密服务
+POLYV = {
+    "userId": "userId",
+    "writeToken": "writeToken",
+    "readToken": "readToken",
+    "secretkey": "secretkey",
+    "tokenUrl": "https://hls.videocc.net/service/v1/token",
+}
+
 # celery异步任务队列框架配置项
 CELERY_BROKER_URL = 'redis://:@127.0.0.1:6379/14'
 CELERY_RESULT_BACKEND = 'redis://:@127.0.0.1:6379/15'
