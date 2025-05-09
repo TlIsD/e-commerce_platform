@@ -130,3 +130,9 @@ class CourseChapterListAPIView(ListAPIView):
             return []
         queryset = CourseChapter.objects.filter(course=course,is_show=True, is_deleted=False).order_by("order", "id")
         return queryset.all()
+
+
+class CourseTypeListAPIView(APIView):
+    # 课程类型
+    def get(self, request):
+        return Response(Course.COURSE_TYPE)

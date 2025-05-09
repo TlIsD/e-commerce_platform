@@ -36,7 +36,7 @@ class CourseCategory(BaseModel):
 
 
 class Course(BaseModel):
-    course_type = (
+    COURSE_TYPE = (
         (0, '实战课程'),
         (1, '会员专享'),
         (2, '学位课程'),
@@ -51,7 +51,6 @@ class Course(BaseModel):
         (1, '下线'),
         (2, '预上线'),
     )
-    # course_cover = models.ImageField(upload_to="courses/cover", max_length=255, verbose_name="封面图片", blank=True, null=True)
     course_cover = StdImageField(variations={
         'thumb_1080x608': (1080, 608),  # 高清图
         'thumb_540x304': (540, 304),  # 中等比例
@@ -59,7 +58,7 @@ class Course(BaseModel):
     }, upload_to="courses/cover", max_length=255, verbose_name="封面图片", blank=True, null=True)
 
     course_video = models.FileField(upload_to="courses/video", max_length=255, verbose_name="封面视频", blank=True, null=True)
-    course_type = models.SmallIntegerField(choices=course_type,default=0, verbose_name="付费类型")
+    course_type = models.SmallIntegerField(choices=COURSE_TYPE,default=0, verbose_name="付费类型")
     level = models.SmallIntegerField(choices=level_choices, default=1, verbose_name="难度等级")
     description = RichTextUploadingField(null=True, blank=True, verbose_name="详情介绍")
     pub_date = models.DateField(auto_now_add=True, verbose_name="发布日期")

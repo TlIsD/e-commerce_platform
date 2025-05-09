@@ -60,6 +60,16 @@ const routes = [
                 name: "UserOrder",
                 component: ()=> import("../components/user/Order.vue"),
             },
+            {
+                meta:{
+                    title: "我的课程",
+                    keepAlive: true,
+                    authorization: true,
+                },
+                path: 'course',
+                name: "UserCourse",
+                component: ()=> import("../components/user/Course.vue"),
+            },
         ]
     },
     {

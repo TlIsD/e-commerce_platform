@@ -1,6 +1,6 @@
 from django_redis import get_redis_connection
 from rest_framework import serializers
-from .models import User
+from .models import User, UserCourse
 from rest_framework_jwt.settings import api_settings
 import re, constants
 from platformapi.utils.tencentcloudapi import TencentCloudApi, TencentCloudSDKException
@@ -89,31 +89,21 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
         return user
 
-# class UserLoginSerializer(serializers.Serializer):
-#     sms_captcha = serializers.CharField(min_length=4, max_length=6, required=True, write_only=True, help_text='验证码')
-#     ticket = serializers.CharField(write_only=True, required=True, help_text='临时凭证')
-#     randstr = serializers.CharField(write_only=True, required=True, help_text='随机字符串')
-#     token = serializers.CharField(read_only=True)
-#
-#     class Meta:
-#         model = User
-#         fields = ['phone', 'password', 'sms_captcha', 'token', 'ticket', 'randstr']
-#         extra_kwargs = {
-#             'phone': {
-#                 'required': True,
-#                 'read_only': True,
-#             },
-#             'password': {
-#                 'required': True,
-#                 'read_only': True,
-#             }
-#         }
-#
-#     def validate(self, attrs):
-#         phone = attrs.get('phone')
-#         user =User.objects.filter(phone=phone).first()
-#         if user:
-#             user.token = generate_jwt_token(user)
-#             return user
-#         else:
-#             raise serializers.ValidationError('用户不存在')
+class UserCourseModelSerializer(serializers.ModelSerializer):
+    # 用户课程信息序列化器
+    course_cover = serializers.ImageField(source="course.course_cover")
+    course_name = serializers.CharField(source="course.name")
+    chapter_name = serializers.CharField(source="chapter.name", default="")
+    chapter_id = serializers.IntegerField(source="chapter.id", default=0)
+    chapter_orders = serializers.IntegerField(source="chapter.orders", default=0)
+    lesson_id = serializers.IntegerField(source="lesson.id", default=0)
+    lesson_name = serializers.CharField(source="lesson.name", default="")
+    lesson_orders = serializers.IntegerField(source="lesson.orders", default=0)
+    course_type = serializers.IntegerField(source="course.course_type", default=0)
+    get_course_type_display = serializers.CharField(source="course.get_course_type_display",default="")
+
+    class Meta:
+        model = UserCourse
+        fields = ["course_id", "course_cover",  "course_name", "study_time", "chapter_id", "chapter_orders", "chapter_name",
+                  "lesson_id", "lesson_orders", "lesson_name","course_type", "get_course_type_display", "progress",
+                  "note", "qa", "code"]

@@ -10,7 +10,7 @@ const course = reactive({
 
     ordering: '-id',  // 课程排序条件
     page: 1,  // 当前页码
-    size: 8,  // 当前页数据量
+    size: 5,  // 当前页数据量
     count: 0,  // 课程列表的数量
     has_perv: false,  // 是否有上一页
     has_next: false,  // 是否有下一页
@@ -28,6 +28,11 @@ const course = reactive({
     },
     tabIndex: 1,  // 课程详情页默认展示的选项卡
     chapter_list: [], // 课程章节列表
+
+    course_type: [],  // 我的课程-课程类型列表
+    current_course_type: -1,  // 我的课程-当前显示的课程类型，默认为-1，表示全部
+    user_course_count: 0,    // 我的课程-课程列表总数
+    user_course_list:[], // 用户中心的课程列表
 
     // 获取学习方向信息
     get_course_direction(){
@@ -89,7 +94,25 @@ const course = reactive({
     // 获取指定课程的章节列表
     get_course_chapters(){
         return http.get(`/courses/${this.course_id}/chapters`)
-    }
+    },
+
+    // 获取课程类型
+    get_course_type_list(token){
+        return http.get("/courses/type/")
+    },
+    // 获取用户的课程列表
+    get_user_course_list(token){
+        return http.get("/users/course/", {
+            params: {
+                type: this.current_course_type,
+                page: this.page,
+                size: this.size,
+            },
+            headers:{
+                Authorization: `jwt ${token}`,
+            }
+        })
+    },
 })
 
 export default course;
