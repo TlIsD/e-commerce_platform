@@ -11,7 +11,7 @@
           <div class="info-wapper">
             <div class="info-box clearfix">
               <label class="pull-left">昵称</label>
-              <div class="pull-left">墨落</div>
+              <div class="pull-left">{{ store.state.user.nickname }}</div>
             </div>
             <div class="info-box clearfix">
               <label class="pull-left">职位</label>
@@ -37,7 +37,8 @@
 </template>
 
 <script setup>
-
+import {useStore} from "vuex"
+const store = useStore()
 </script>
 
 <style scoped>
