@@ -7,10 +7,9 @@
           <div class="user-pic-bg"><img class="img" :src="store.state.user.avatar" alt=""></div>
         </div>
         <div class="user-info-right">
-          <h3 class="user-name clearfix"><span>墨落</span></h3>
+          <h3 class="user-name clearfix"><span>{{ store.state.user.username }}</span></h3>
           <p class="about-info">
             <span>男</span>
-            <span>CG影视动画师</span>
           </p>
         </div>
         <div class="user-sign hide">
@@ -24,7 +23,7 @@
             </div>
           </div>
           <div class="item follows">
-            <router-link to="/u/index/credit"><em>0</em></router-link>
+            <router-link to="/u/index/credit"><em>{{ store.state.user.credit }}</em></router-link>
             <span>积分</span>
           </div>
           <div class="item follows">
@@ -79,7 +78,6 @@
           </li>
         </ul>
       </div>
-      <!-- 嵌套路由，也是依靠router-view来加载不同的子页面内容 -->
       <router-view></router-view>
     </div>
   </main>
@@ -102,7 +100,7 @@ main{
   margin-bottom: 40px;
 }
 .bg-other {
-  background: url("../assets/user_bg.png") no-repeat center top #000;
+  background: url("../assets/cart-header-bg.jpeg") no-repeat center top;
   background-size: cover;
 }
 .user-head-info{
